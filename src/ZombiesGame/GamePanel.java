@@ -1,6 +1,9 @@
 package ZombiesGame;
 
-public class GamePanel
+import javax.swing.*;
+import java.awt.*;
+
+public class GamePanel extends JPanel
 {
     private final int SCALE             = 4;
     private final int BASE_TILE_SIZE    = 16;
@@ -21,8 +24,18 @@ public class GamePanel
         panelWidth  = width * SCALED_TILE_SIZE;
         panelHeight = height * SCALED_TILE_SIZE;
 
-
+        this.setPreferredSize(new Dimension(panelWidth, panelHeight));
     }
 
 
+    /**
+     * 
+     * @param g
+     */
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+
+    }
 }
