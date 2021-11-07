@@ -1,3 +1,5 @@
+package ZombiesGame.model;
+
 public class Item {
     int fireRate;
     double xPos, yPos;

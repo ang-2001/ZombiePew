@@ -1,9 +1,9 @@
-package ZombiesGame;
+package ZombiesGame.view;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class GamePanel extends JPanel
+public class View extends JPanel
 {
     private final int SCALE             = 4;
     private final int BASE_TILE_SIZE    = 16;
@@ -19,7 +19,7 @@ public class GamePanel extends JPanel
      * @param width the width of the Panel in terms of the number of tiles
      * @param height the height of the Panel in terms of the number of tiles
      */
-    public GamePanel(int width, int height)
+    public View(int width, int height)
     {
         panelWidth  = width * SCALED_TILE_SIZE;
         panelHeight = height * SCALED_TILE_SIZE;
