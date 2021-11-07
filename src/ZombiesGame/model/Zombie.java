@@ -1,3 +1,4 @@
+package ZombiesGame.model;
 
 public class Zombie {
 	private boolean hasAttackedPlayer = false;

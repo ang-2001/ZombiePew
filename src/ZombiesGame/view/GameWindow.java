@@ -1,10 +1,10 @@
-package ZombiesGame;
+package ZombiesGame.view;
 
 import javax.swing.*;
 
 public class GameWindow
 {
-    public GameWindow(String title, GamePanel panel)
+    public GameWindow(String title, View panel)
     {
         JFrame frame = new JFrame(title);
 

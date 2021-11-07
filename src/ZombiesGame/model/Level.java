@@ -1,3 +1,5 @@
+package ZombiesGame.model;
+
 import java.util.ArrayList;
 
 public class Level {
