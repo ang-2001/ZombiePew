@@ -3,33 +3,38 @@ package ZombiesGame.model;
 public class Zombie {
 	private boolean hasAttackedPlayer = false;
 	private boolean isDead = false;
-	private double xPos = 0.0;
-	private double yPos = 0.0;
-	
-	public Zombie(double xPos, double yPos)
+	private int x;
+	private int y;
+
+	public Zombie(int x, int y)
 	{
 	    super();
-	    this.xPos = xPos;
-	    this.yPos = yPos; 
+	    this.x = x;
+	    this.y = y;
 	}
 	
-	public double getxPos() {
-	    return xPos;
+	public int getXPos()
+	{
+	    return x;
 	}
 
-	public void setxPos(double xPos) {
-	    this.xPos = xPos;
+	public void setXPos(int x)
+	{
+	    this.x = x;
 	}
 
-	public double getyPos() {
-	    return yPos;
+	public int getYPos()
+	{
+	    return y;
 	}
 
-	public void setyPos(double yPos) {
-	    this.yPos = yPos;
+	public void setYPos(int y)
+	{
+	    this.y = y;
 	}
 	
-	public void move() {
+	public void move()
+	{
 		//code here
 	}
 	
@@ -37,11 +42,13 @@ public class Zombie {
 		isDead = true;
 	}
 	
-	public void hit() {
+	public void hit()
+	{
 		//code here
 	}
 	
-	public boolean getStatus() {
+	public boolean getStatus()
+	{
 		//code here
 		return false;
 	}

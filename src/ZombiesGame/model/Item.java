@@ -1,23 +1,32 @@
 package ZombiesGame.model;
 
-public class Item {
+public class Item
+{
     int fireRate;
-    double xPos, yPos;
+    int x, y;
 
-    public double getPos(){
+    public int getX(){
         // some code here
-        return xPos;
+        return x;
     }
 
-    public void remove(){
+    public int getY()
+    {
+        return y;
+    }
+
+    public void remove()
+    {
         // some code here
     }
 
-    public void generateNewPos(){
+    public void generateNewPos()
+    {
         // some code here
     }
 
-    public int getFireRate(){
+    public int getFireRate()
+    {
         // some code here
         return fireRate;
     }
