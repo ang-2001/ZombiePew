@@ -1,7 +1,10 @@
 package ZombiesGame.view;
 
+import ZombiesGame.Message;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.BlockingQueue;
 
 public class View extends JPanel
 {
@@ -11,6 +14,8 @@ public class View extends JPanel
 
     private final int WIDTH = 16 * SCALED_TILE_SIZE;
     private final int HEIGHT = 12 * SCALED_TILE_SIZE;
+
+    private BlockingQueue<Message> queue;
 
 
     /**

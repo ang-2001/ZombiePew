@@ -1,12 +1,13 @@
 package ZombiesGame.controller;
 
+import ZombiesGame.Message;
 import ZombiesGame.view.View;
 
 import java.util.concurrent.BlockingQueue;
 
 public class Controller
 {
-//    private BlockingQueue<Message> queue;
+    private BlockingQueue<Message> queue;
 //    private Model model;
     private View view;
 
