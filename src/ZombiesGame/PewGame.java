@@ -2,6 +2,7 @@ package ZombiesGame;
 
 import ZombiesGame.controller.Controller;
 import ZombiesGame.model.Model;
+import ZombiesGame.messages.Message;
 import ZombiesGame.view.GameWindow;
 import ZombiesGame.view.View;
 
