@@ -1,5 +1,6 @@
 package ZombiesGame;
 
+import ZombiesGame.messages.Message;
 import ZombiesGame.view.GameWindow;
 import ZombiesGame.view.View;
 
