@@ -1,4 +1,4 @@
-package ZombiesGame;
+package ZombiesGame.messages;
 
 public interface Message
 {
