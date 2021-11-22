@@ -2,17 +2,16 @@ package ZombiesGame.view;
 
 
 import ZombiesGame.controller.GameInfo;
-import ZombiesGame.messages.Message;
-import ZombiesGame.messages.NewGameMessage;
-import ZombiesGame.messages.UpdatePlayerMessage;
+import ZombiesGame.messages.*;
 import ZombiesGame.model.Entity;
+import ZombiesGame.model.Player;
+import ZombiesGame.model.Projectile;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
+import java.awt.event.*;
 import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
-import java.awt.event.KeyEvent;
 
 public class GamePanel extends JPanel
 {
@@ -23,6 +22,7 @@ public class GamePanel extends JPanel
 
 
     private LinkedList<Entity> entities;
+    private Point mousePosition;
     /**
      * constructor for GamePanel class that should initialize panelWidth and panelHeight,
      * which will be used to set up the preferred size of the panel
@@ -34,8 +34,9 @@ public class GamePanel extends JPanel
         keysPressed     = ActionTracker.getInstance();
         this.queue      = queue;
 
-
-        this.addKeyListener(new KeyHandler());
+        addMouseMotionListener(new MouseDraggedHandler());
+        addMouseListener(new MouseHandler());
+        addKeyListener(new KeyHandler());
 
         // temporary placement of game initiation(to be moved to an actual button)
         try {
@@ -49,30 +50,51 @@ public class GamePanel extends JPanel
         int REFRESH_DELAY = 1000 / 60;
 
         Timer animationTimer = new Timer(REFRESH_DELAY, e -> {
-
-            // all messages related to continual movement
             try {
                 queue.put(new UpdatePlayerMessage());
+                queue.put(new UpdateEntitiesMessage());
 
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
         });
 
+        // timer for rate of projectile generation
+        // defines delay for projectile creation message = ~5 projectiles/sec
+        int FIRE_RATE_DELAY = 1000 / 5;
+
+        Timer fireRateTimer = new Timer(FIRE_RATE_DELAY, e -> {
+            try {
+                if (keysPressed.isClicked())
+                    queue.put(new CreateProjectileMessage(mousePosition));
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+
+        // add in another method later during screen switching
         animationTimer.start();
+        fireRateTimer.start();
 
         this.setFocusable(true);
         this.setDoubleBuffered(true);
     }
 
-
+    /**
+     *
+     * @param info
+     */
     public void updateView(GameInfo info)
     {
         this.entities = info.getEntityInfo();
         repaint();
     }
 
-
+    /**
+     *
+     * @return
+     */
     @Override
     public Dimension getPreferredSize()
     {
@@ -89,12 +111,20 @@ public class GamePanel extends JPanel
 
         Graphics2D g2 = (Graphics2D) g;
 
+        // these are just placeholders, will replace with sprites later
         if(entities != null)
         {
             for(Entity e: entities)
             {
-                g2.setColor(Color.BLACK);
-                g2.fillRect(e.getX(), e.getY(), spriteSize, spriteSize);
+                if (e.getClass() == Player.class)
+                {
+                    g2.setColor(Color.BLACK);
+                    g2.fillRect(e.getX(), e.getY(), spriteSize, spriteSize);
+                }
+                else if (e.getClass() == Projectile.class)
+                {
+                    g2.fillOval(e.getX(), e.getY(), spriteSize/4, spriteSize/4);
+                }
             }
         }
 
@@ -135,6 +165,37 @@ public class GamePanel extends JPanel
                 keysPressed.setDown(false);
             if(code == KeyEvent.VK_D)
                 keysPressed.setRight(false);
+        }
+    }
+
+
+    /**
+     *
+     */
+    private class MouseHandler extends MouseAdapter
+    {
+        public void mousePressed(MouseEvent e)
+        {
+            //System.out.println("clicked at: " + mousePosition);
+            mousePosition = e.getPoint();
+            keysPressed.setClicked(true);
+        }
+
+        public void mouseReleased(MouseEvent e)
+        {
+            keysPressed.setClicked(false);
+        }
+    }
+
+    /**
+     *
+     */
+    private class MouseDraggedHandler extends MouseMotionAdapter
+    {
+        @Override
+        public void mouseDragged(MouseEvent e)
+        {
+            mousePosition = e.getPoint();
         }
     }
 }

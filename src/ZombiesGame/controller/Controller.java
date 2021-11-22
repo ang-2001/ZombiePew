@@ -1,9 +1,7 @@
 package ZombiesGame.controller;
 
-import ZombiesGame.messages.ChangeGameStateMessage;
-import ZombiesGame.messages.Message;
-import ZombiesGame.messages.NewGameMessage;
-import ZombiesGame.messages.UpdatePlayerMessage;
+
+import ZombiesGame.messages.*;
 import ZombiesGame.model.Model;
 import ZombiesGame.view.ActionTracker;
 import ZombiesGame.view.View;
@@ -29,7 +27,9 @@ public class Controller
         this.view   = view;
 
         valves.add(new NewGameValve());
+        valves.add(new CreateProjectileValve());
         valves.add(new UpdatePlayerValve());
+        valves.add(new UpdateEntitiesValve());
         valves.add(new ChangeGameStateValve());
     }
 
@@ -92,6 +92,28 @@ public class Controller
     }
 
 
+    private class CreateProjectileValve implements Valve
+    {
+
+        @Override
+        public ValveResponse execute(Message message)
+        {
+            if (message.getClass() != CreateProjectileMessage.class)
+            {
+                return ValveResponse.MISS;
+            }
+
+            CreateProjectileMessage m = (CreateProjectileMessage) message;
+
+            model.createProjectile(m.getMousePosition());
+            GameInfo data = model.getGameStatus();
+            view.updateView(data);
+
+            return ValveResponse.EXECUTED;
+        }
+    }
+
+
     private class UpdatePlayerValve implements Valve
     {
         @Override
@@ -122,6 +144,24 @@ public class Controller
         }
     }
 
+
+    private class UpdateEntitiesValve implements Valve {
+        @Override
+        public ValveResponse execute(Message message) {
+            if (message.getClass() != UpdateEntitiesMessage.class) {
+                return ValveResponse.MISS;
+            }
+
+            UpdateEntitiesMessage m = (UpdateEntitiesMessage) message;
+
+            model.updateEntities();
+            GameInfo data = model.getGameStatus();
+            view.updateView(data);
+          
+            return ValveResponse.EXECUTED;
+        }
+    }
+
     private class ChangeGameStateValve implements Valve{
 
         @Override
@@ -133,7 +173,6 @@ public class Controller
 
             ChangeGameStateMessage m = (ChangeGameStateMessage) message;
             if (m.getIsPressed()) {
-                System.out.println("Change game state message sent!");
                 view.changeLayout();
             }
 
