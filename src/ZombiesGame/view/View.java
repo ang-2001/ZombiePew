@@ -1,5 +1,6 @@
 package ZombiesGame.view;
 
+import ZombiesGame.controller.GameInfo;
 import ZombiesGame.messages.Message;
 
 import javax.swing.*;
@@ -22,9 +23,10 @@ public class View extends JFrame
 
     public View(String title, BlockingQueue<Message> queue)
     {
-        this.setTitle(title);
+        setTitle(title);
         gamePanel = new GamePanel(queue, TILE_SIZE, new Dimension(WIDTH, HEIGHT));
 
+        add(gamePanel);
 
         pack();
         setResizable(false);
@@ -32,5 +34,10 @@ public class View extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setVisible(true);
+    }
+
+    public void updateView(GameInfo info)
+    {
+        gamePanel.updateView(info);
     }
 }

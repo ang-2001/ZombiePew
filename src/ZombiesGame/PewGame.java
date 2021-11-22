@@ -21,5 +21,11 @@ public class PewGame
         view = new View("Call of Pew Pew", queue);
         controller = new Controller(queue, model, view);
 
+        try {
+            controller.mainLoop();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }

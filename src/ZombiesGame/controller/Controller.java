@@ -1,7 +1,10 @@
 package ZombiesGame.controller;
 
 import ZombiesGame.messages.Message;
+import ZombiesGame.messages.NewGameMessage;
+import ZombiesGame.messages.UpdatePlayerMessage;
 import ZombiesGame.model.Model;
+import ZombiesGame.view.ActionTracker;
 import ZombiesGame.view.View;
 
 import java.util.LinkedList;
@@ -23,6 +26,9 @@ public class Controller
         this.queue  = queue;
         this.model  = model;
         this.view   = view;
+
+        valves.add(new NewGameValve());
+        valves.add(new UpdatePlayerValve());
     }
 
 
@@ -47,8 +53,70 @@ public class Controller
                 // if successfully processed or game over, leave the loop
                 if (response != ValveResponse.MISS)
                     break;
-
             }
+        }
+    }
+
+
+    private class NewGameValve implements Valve
+    {
+        /**
+         * resets game state and gamedata, initializes start position of player
+         * @param message
+         * @return
+         */
+        @Override
+        public ValveResponse execute(Message message) {
+            if (message.getClass() != NewGameMessage.class)
+            {
+                return ValveResponse.MISS;
+            }
+
+            NewGameMessage m = (NewGameMessage) message;
+
+            // reset game state
+            model.createNewGame();
+
+            // sets player position relative to screen height and width( should be near centered)
+
+            model.createPlayer(m.getWidth(), m.getHeight(), m.getSpriteSize());
+
+            // send render data to View
+            GameInfo data = model.getGameStatus();
+            view.updateView(data);
+
+            return ValveResponse.EXECUTED;
+        }
+    }
+
+
+    private class UpdatePlayerValve implements Valve
+    {
+        @Override
+        public ValveResponse execute(Message message) {
+            if (message.getClass() != UpdatePlayerMessage.class)
+            {
+                return ValveResponse.MISS;
+            }
+
+            UpdatePlayerMessage m = (UpdatePlayerMessage) message;
+            ActionTracker keysPressed = ActionTracker.getInstance();
+            int displacement      = 5;
+
+            if (keysPressed.isUp())
+                model.updatePlayer(0, -displacement);
+            if (keysPressed.isLeft())
+                model.updatePlayer(-displacement, 0);
+            if (keysPressed.isDown())
+                model.updatePlayer(0,displacement);
+            if (keysPressed.isRight())
+                model.updatePlayer(displacement,0);
+
+            // might need to change this,
+            GameInfo data = model.getGameStatus();
+            view.updateView(data);
+
+            return ValveResponse.EXECUTED;
         }
     }
 }
