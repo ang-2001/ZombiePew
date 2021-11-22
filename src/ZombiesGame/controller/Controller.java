@@ -1,5 +1,6 @@
 package ZombiesGame.controller;
 
+import ZombiesGame.messages.ChangeGameStateMessage;
 import ZombiesGame.messages.Message;
 import ZombiesGame.messages.NewGameMessage;
 import ZombiesGame.messages.UpdatePlayerMessage;
@@ -29,6 +30,7 @@ public class Controller
 
         valves.add(new NewGameValve());
         valves.add(new UpdatePlayerValve());
+        valves.add(new ChangeGameStateValve());
     }
 
 
@@ -115,6 +117,25 @@ public class Controller
             // might need to change this,
             GameInfo data = model.getGameStatus();
             view.updateView(data);
+
+            return ValveResponse.EXECUTED;
+        }
+    }
+
+    private class ChangeGameStateValve implements Valve{
+
+        @Override
+        public ValveResponse execute(Message message) {
+            if (message.getClass() != ChangeGameStateMessage.class)
+            {
+                return ValveResponse.MISS;
+            }
+
+            ChangeGameStateMessage m = (ChangeGameStateMessage) message;
+            if (m.getIsPressed()) {
+                System.out.println("Change game state message sent!");
+                view.changeLayout();
+            }
 
             return ValveResponse.EXECUTED;
         }
