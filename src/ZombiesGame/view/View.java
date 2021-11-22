@@ -16,6 +16,11 @@ public class View extends JFrame
     private final int WIDTH     = 16 * TILE_SIZE;
     private final int HEIGHT    = 12 * TILE_SIZE;
 
+    private String title;
+
+    private CardLayout layout;
+    private JPanel cardPanel;
+    private StartPanel startPanel;
     private GamePanel gamePanel;
 
 
@@ -23,10 +28,19 @@ public class View extends JFrame
 
     public View(String title, BlockingQueue<Message> queue)
     {
+        this.queue = queue;
         setTitle(title);
+
+        layout = new CardLayout();
+
+        cardPanel = new JPanel(layout);
+        startPanel = new StartPanel(queue);
         gamePanel = new GamePanel(queue, TILE_SIZE, new Dimension(WIDTH, HEIGHT));
 
-        add(gamePanel);
+        cardPanel.add(startPanel, "startPanel");
+        cardPanel.add(gamePanel, "gamePanel");
+
+        add(cardPanel);
 
         pack();
         setResizable(false);
@@ -34,6 +48,11 @@ public class View extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setVisible(true);
+    }
+
+    public void changeLayout(){
+        layout.show(cardPanel, "gamePanel");
+        gamePanel.requestFocus();
     }
 
     public void updateView(GameInfo info)
