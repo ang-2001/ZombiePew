@@ -2,6 +2,7 @@ package ZombiesGame.model;
 
 import ZombiesGame.controller.GameInfo;
 
+import java.awt.*;
 import java.util.LinkedList;
 
 public class Model
@@ -31,6 +32,23 @@ public class Model
     }
 
 
+    public void createProjectile(Point mousePos)
+    {
+        Entity player   = entities.getFirst();
+        int deltaX      = mousePos.x - player.getX();
+        int deltaY      = mousePos.y - player.getY();
+
+        // new projectile created based on position of player, add to entities
+
+        entities.add(new Projectile(player, deltaX, deltaY));
+    }
+
+
+    /**
+     *
+     * @param dx
+     * @param dy
+     */
     public void updatePlayer(int dx, int dy)
     {
         Player p = (Player) entities.getFirst();
@@ -39,12 +57,35 @@ public class Model
     }
 
 
+    /**
+     *
+     */
+    public void updateEntities()
+    {
+        for(Entity e : entities)
+        {
+            if (e.getClass() == Projectile.class)
+            {
+                e.translate();
+            }
+        }
+    }
+
+
+    /**
+     *
+     * @return
+     */
     public LinkedList<Entity> getEntities()
     {
         return (LinkedList<Entity>) entities.clone();
     }
 
 
+    /**
+     *
+     * @return
+     */
     public GameInfo getGameStatus()
     {
         return new GameInfo(this);
