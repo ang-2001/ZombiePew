@@ -3,7 +3,6 @@ package ZombiesGame;
 import ZombiesGame.controller.Controller;
 import ZombiesGame.model.Model;
 import ZombiesGame.messages.Message;
-import ZombiesGame.view.GameWindow;
 import ZombiesGame.view.View;
 
 import java.util.concurrent.BlockingQueue;
@@ -19,9 +18,8 @@ public class PewGame
     public static void main(String[] args)
     {
         model = new Model();
-        view = new View();
+        view = new View("Call of Pew Pew", queue);
         controller = new Controller(queue, model, view);
 
-        GameWindow window = new GameWindow("Pew Game", view);
     }
 }

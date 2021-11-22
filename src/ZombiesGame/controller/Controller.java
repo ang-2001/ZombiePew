@@ -1,6 +1,6 @@
 package ZombiesGame.controller;
 
-import ZombiesGame.Message;
+import ZombiesGame.messages.Message;
 import ZombiesGame.model.Model;
 import ZombiesGame.view.View;
 
@@ -13,6 +13,7 @@ public class Controller
     private BlockingQueue<Message> queue;
     private Model model;
     private View view;
+
     private List<Valve> valves = new LinkedList<>();
     
     // add constructor arguments as needed
@@ -28,20 +29,25 @@ public class Controller
     public void mainLoop() throws Exception
     {
         ValveResponse response = ValveResponse.EXECUTED;
+
         Message message = null;
-        while (response != ValveResponse.FINISH){
-            try {
+        while (response != ValveResponse.FINISH)
+        {
+            try
+            {
                 message = queue.take();
             }
-            catch (InterruptedException e){
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
-            for (Valve valve : valves) {
+            for (Valve valve : valves)
+            {
                 response = valve.execute(message);
                 // if successfully processed or game over, leave the loop
-                if (response != ValveResponse.MISS) {
+                if (response != ValveResponse.MISS)
                     break;
-                }
+
             }
         }
     }
