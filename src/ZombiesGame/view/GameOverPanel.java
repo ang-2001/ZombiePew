@@ -89,4 +89,10 @@ public class GameOverPanel extends JPanel {
         highScoreLabel.setText("High Score: " + info.getHighScore());
 
     }
+
+    @Override
+    public Dimension getPreferredSize()
+    {
+        return dimensions;
+    }
 }

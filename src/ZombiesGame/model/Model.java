@@ -24,6 +24,9 @@ public class Model
     private static final int NORMAL_POINT = 5;
     private static final int ITEM_POINT = 50;
 
+    private double zombieVelocity = 4;
+    private int scoreToLevelUp = 100;
+
     private final Random r = new Random();
 
     public Model()
@@ -48,6 +51,8 @@ public class Model
         this.spriteSize       = spriteSize;
         this.maxEnemies       = 8;
         this.currentEnemies   = 0;
+        this.zombieVelocity   = 4;
+        this.scoreToLevelUp   = 100;
         resetScore();
         entities.clear();
     }
@@ -176,16 +181,23 @@ public class Model
             int deltaX      = player.getX() - enemy.getX();
             int deltaY      = player.getY() - enemy.getY();
 
-            int k         = 8;
-            double theta  = Math.toDegrees(Math.atan2(deltaY, deltaX));
-            theta         = Math.toRadians(theta);
 
-            // Velocity : change in x and y per update call
-            double dx   = k * Math.cos(theta);
-            double dy   = k * Math.sin(theta);
+            if (getScore() >= scoreToLevelUp) {
+                maxEnemies += 1;
+                zombieVelocity += 0.5;
+                scoreToLevelUp += 100;
+                System.out.println("Zombie velocity: " + zombieVelocity);
+            }
+                double theta  = Math.toDegrees(Math.atan2(deltaY, deltaX));
+                theta         = Math.toRadians(theta);
 
-            enemy.dx = (int) dx;
-            enemy.dy = (int) dy;
+                // Velocity : change in x and y per update call
+                double dx   = zombieVelocity * Math.cos(theta);
+                double dy   = zombieVelocity * Math.sin(theta);
+
+                enemy.dx = (int) dx;
+                enemy.dy = (int) dy;
+
         }
     }
 
@@ -437,6 +449,10 @@ public class Model
 
     public int getHighScore(){
         return highScore;
+    }
+
+    public void increaseLevel(){
+
     }
 
 
