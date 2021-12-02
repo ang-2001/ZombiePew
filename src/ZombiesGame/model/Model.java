@@ -352,7 +352,7 @@ public class Model
                     }
                     else
                     {
-                        e.dx *= -2;
+                        e.dx *= -1;
                     }
                 }
 
@@ -364,7 +364,7 @@ public class Model
                     }
                     else
                     {
-                        e.dy *= -2;
+                        e.dy *= -1;
                     }
                 }
             }
