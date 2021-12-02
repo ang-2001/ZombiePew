@@ -14,7 +14,8 @@ public class ActionTracker
 
     public void reset()
     {
-        instance = null;
+        //instance = null;
+        isUp = false; isDown = false; isLeft = false; isRight = false; isClicked = false;
     }
 
     // setter methods

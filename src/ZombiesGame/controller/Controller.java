@@ -30,6 +30,8 @@ public class Controller
         valves.add(new CreateEnemyValve());
         valves.add(new UpdateEntitiesValve());
         valves.add(new StartGameValve());
+
+        valves.add(new FirstScreenValve());
     }
 
 
@@ -81,7 +83,6 @@ public class Controller
             // sets player position relative to screen height and width( should be near centered)
 
             model.createPlayer();
-
             // send render data to View
             GameInfo data = model.getGameStatus();
             view.updateView(data);
@@ -152,7 +153,10 @@ public class Controller
             Entity player = model.getEntities().getFirst();
             if (!player.isActive())
             {
-                // view.switchPanel("gameOverPanel");
+                 model.setHighScore();
+                 GameInfo info = model.getGameStatus();
+                 view.updateScore(info);
+                 view.switchPanel("gameOverPanel");
             }
             model.removeInactive();
 
@@ -175,8 +179,32 @@ public class Controller
 
             StartGameMessage m = (StartGameMessage) message;
 
+            model.setHighScore();
+            GameInfo info = model.getGameStatus();
+            view.updateScore(info);
+            view.updateView(info);
             view.switchPanel("gamePanel");
 
+
+
+            return ValveResponse.EXECUTED;
+        }
+    }
+
+    private class FirstScreenValve implements Valve
+    {
+        @Override
+        public ValveResponse execute(Message message) {
+            if (message.getClass() != FirstScreenMessage.class)
+            {
+                return ValveResponse.MISS;
+            }
+
+            FirstScreenMessage m = (FirstScreenMessage) message;
+
+            model.setHighScore();
+            GameInfo info = model.getGameStatus();
+            view.updateScore(info);
 
             return ValveResponse.EXECUTED;
         }

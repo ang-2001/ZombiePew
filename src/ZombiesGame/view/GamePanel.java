@@ -25,6 +25,11 @@ public class GamePanel extends JPanel
     private LinkedList<Entity> entities;
     private Point mousePosition;
 
+    private JLabel scoreLabel;
+    private JLabel highScoreLabel;
+    private int score = 0;
+    private int highScore = 0;
+
     /**
      * constructor for GamePanel class that should initialize panelWidth and panelHeight,
      * which will be used to set up the preferred size of the panel
@@ -39,6 +44,17 @@ public class GamePanel extends JPanel
         addMouseMotionListener(new MouseDraggedHandler());
         addMouseListener(new MouseHandler());
         addKeyListener(new KeyHandler());
+
+        scoreLabel = new JLabel();
+        scoreLabel.setForeground(Color.BLACK);
+        scoreLabel.setFont(new Font("Serif", Font.PLAIN, 30));
+
+        add(scoreLabel);
+
+        highScoreLabel = new JLabel();
+        highScoreLabel.setForeground(Color.BLACK);
+        highScoreLabel.setFont(new Font("Serif", Font.PLAIN, 30));
+        add(highScoreLabel);
 
         // defines delay in message generation for game updates = ~60 refreshes/sec
         int REFRESH_DELAY = 1000 / 60;
@@ -105,6 +121,7 @@ public class GamePanel extends JPanel
         projectileTimer.stop();
         enemyTimer.stop();
         keysPressed.reset();
+
     }
     /**
      *
@@ -113,6 +130,10 @@ public class GamePanel extends JPanel
     public void updateView(GameInfo info)
     {
         this.entities = info.getEntityInfo();
+        score = info.getScore();
+        scoreLabel.setText("Score: " + score);
+        highScore = info.getHighScore();
+        highScoreLabel.setText("High score: " + highScore);
         repaint();
     }
 

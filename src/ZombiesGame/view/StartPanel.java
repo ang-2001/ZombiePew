@@ -1,5 +1,7 @@
 package ZombiesGame.view;
 
+import ZombiesGame.controller.GameInfo;
+import ZombiesGame.messages.FirstScreenMessage;
 import ZombiesGame.messages.StartGameMessage;
 import ZombiesGame.messages.Message;
 
@@ -17,8 +19,12 @@ public class StartPanel extends JPanel{
     private final int height = 12 * SCALED_TILE_SIZE;
     BlockingQueue<Message> queue;
 
+    private JLabel highScoreLabel;
+
     public StartPanel(BlockingQueue<Message> queue){
         this.queue = queue;
+
+
 
         BoxLayout startLayout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
         setLayout(startLayout);
@@ -32,10 +38,18 @@ public class StartPanel extends JPanel{
                 "'WIDTH=%d>%s</div></html>", width/2, "CALL OF PEW PEW");
 
         title.setText(labelText);
-        title.setForeground(Color.WHITE);
+        title.setForeground(Color.RED);
         title.setFont(new Font("Serif", Font.PLAIN, height/7));
 
         titlePanel.add(title);
+
+
+        highScoreLabel = new JLabel();
+        highScoreLabel.setForeground(Color.WHITE);
+        highScoreLabel.setFont(new Font("Serif", Font.PLAIN, 30));
+        highScoreLabel.setText("High score: ");
+
+        titlePanel.add(highScoreLabel);
 
         // START BUTTON: SETS FONT STYLE, SIZE, COLOR
         JButton startButton = new JButton("START");
@@ -58,6 +72,12 @@ public class StartPanel extends JPanel{
         add(startButton);
         add(Box.createRigidArea(new Dimension(0,height)));
 
+        try {
+            queue.put(new FirstScreenMessage());
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+
         // START BUTTON: ACTION LISTENER
         startButton.addActionListener(e -> {
             try {
@@ -73,5 +93,11 @@ public class StartPanel extends JPanel{
     public Dimension getPreferredSize()
     {
         return new Dimension(width, height);
+    }
+
+    public void updateScore(GameInfo info){
+        System.out.println("Entered this function");
+        highScoreLabel.setText("High Score: " + info.getHighScore());
+
     }
 }

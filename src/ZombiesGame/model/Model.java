@@ -21,7 +21,8 @@ public class Model
     private int score = 0;
     private int highScore = 0;
     private File scoreFile;
-    private static final int POINTS_SCORED = 5;
+    private static final int NORMAL_POINT = 5;
+    private static final int ITEM_POINT = 50;
 
     private final Random r = new Random();
 
@@ -47,6 +48,7 @@ public class Model
         this.spriteSize       = spriteSize;
         this.maxEnemies       = 8;
         this.currentEnemies   = 0;
+        resetScore();
         entities.clear();
     }
 
@@ -271,6 +273,8 @@ public class Model
                     else if (e1.getClass() == Player.class && e2.getClass() == Item.class)
                     {
                         // player interacts with item
+                        incrementScore(ITEM_POINT);
+                        System.out.println("Score: " + score);
                         e2.setInactive();
                     }
                     else if (e1.getClass() == Enemy.class && e2.getClass() == Enemy.class)
@@ -311,6 +315,8 @@ public class Model
                             || (e1.getClass() == Projectile.class && e2.getClass() == Enemy.class))
                     {
                         // when zombie hits projectile or projectile hits zombie
+                        incrementScore(NORMAL_POINT);
+                        System.out.println("Score: " + score);
                         e1.setInactive();
                         e2.setInactive();
                     }
@@ -385,8 +391,8 @@ public class Model
         return score;
     }
 
-    public void incrementScore(){
-        this.score += POINTS_SCORED;
+    public void incrementScore(int scoreValue){
+        this.score += scoreValue;
     }
 
     public void resetScore(){
@@ -424,7 +430,9 @@ public class Model
             System.out.println("New high score is " + getScore() + ". Previous high score was " + keptScore);
             highScore = getScore();
         }
-        highScore = Integer.parseInt(keptScore);
+        else {
+            highScore = Integer.parseInt(keptScore);
+        }
     }
 
     public int getHighScore(){
