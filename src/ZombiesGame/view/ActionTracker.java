@@ -12,6 +12,11 @@ public class ActionTracker
         // does nothing
     }
 
+    public void reset()
+    {
+        instance = null;
+    }
+
     // setter methods
     public void setUp(boolean b)
     {

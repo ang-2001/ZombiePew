@@ -2,8 +2,7 @@ package ZombiesGame.controller;
 
 
 import ZombiesGame.messages.*;
-import ZombiesGame.model.Model;
-import ZombiesGame.view.ActionTracker;
+import ZombiesGame.model.*;
 import ZombiesGame.view.View;
 
 import java.util.LinkedList;
@@ -29,9 +28,8 @@ public class Controller
         valves.add(new NewGameValve());
         valves.add(new CreateProjectileValve());
         valves.add(new CreateEnemyValve());
-        valves.add(new UpdatePlayerValve());
         valves.add(new UpdateEntitiesValve());
-        valves.add(new ChangeGameStateValve());
+        valves.add(new StartGameValve());
     }
 
 
@@ -136,37 +134,6 @@ public class Controller
     }
 
 
-    private class UpdatePlayerValve implements Valve
-    {
-        @Override
-        public ValveResponse execute(Message message) {
-            if (message.getClass() != UpdatePlayerMessage.class)
-            {
-                return ValveResponse.MISS;
-            }
-
-            UpdatePlayerMessage m = (UpdatePlayerMessage) message;
-            ActionTracker keysPressed = ActionTracker.getInstance();
-            int displacement      = 5;
-
-            if (keysPressed.isUp())
-                model.updatePlayer(0, -displacement);
-            if (keysPressed.isLeft())
-                model.updatePlayer(-displacement, 0);
-            if (keysPressed.isDown())
-                model.updatePlayer(0,displacement);
-            if (keysPressed.isRight())
-                model.updatePlayer(displacement,0);
-
-            // might need to change this,
-            GameInfo data = model.getGameStatus();
-            view.updateView(data);
-
-            return ValveResponse.EXECUTED;
-        }
-    }
-
-
     private class UpdateEntitiesValve implements Valve
     {
         @Override
@@ -178,6 +145,17 @@ public class Controller
             UpdateEntitiesMessage m = (UpdateEntitiesMessage) message;
 
             model.updateEntities();
+            model.checkCollisions();
+            model.checkBoundaryCollisions();
+
+            // *player is always assumed to be first entity added
+            Entity player = model.getEntities().getFirst();
+            if (!player.isActive())
+            {
+                // view.switchPanel("gameOverPanel");
+            }
+            model.removeInactive();
+
             GameInfo data = model.getGameStatus();
             view.updateView(data);
           
@@ -185,19 +163,20 @@ public class Controller
         }
     }
 
-    private class ChangeGameStateValve implements Valve
+
+    private class StartGameValve implements Valve
     {
         @Override
         public ValveResponse execute(Message message) {
-            if (message.getClass() != ChangeGameStateMessage.class)
+            if (message.getClass() != StartGameMessage.class)
             {
                 return ValveResponse.MISS;
             }
 
-            ChangeGameStateMessage m = (ChangeGameStateMessage) message;
-            if (m.getIsPressed()) {
-                view.changeLayout();
-            }
+            StartGameMessage m = (StartGameMessage) message;
+
+            view.switchPanel("gamePanel");
+
 
             return ValveResponse.EXECUTED;
         }

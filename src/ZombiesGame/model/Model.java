@@ -1,6 +1,7 @@
 package ZombiesGame.model;
 
 import ZombiesGame.controller.GameInfo;
+import ZombiesGame.view.ActionTracker;
 
 import java.awt.*;
 import java.io.*;
@@ -44,7 +45,8 @@ public class Model
         this.screenWidth      = width;
         this.screenHeight     = height;
         this.spriteSize       = spriteSize;
-        this.maxEnemies       = 7;
+        this.maxEnemies       = 8;
+        this.currentEnemies   = 0;
         entities.clear();
     }
 
@@ -65,7 +67,7 @@ public class Model
         int deltaX      = mousePos.x - player.getX();
         int deltaY      = mousePos.y - player.getY();
 
-        int k         = 20;
+        int k         = 25;
         double theta  = Math.toDegrees(Math.atan2(deltaY, deltaX));
         theta         = Math.toRadians(theta);
 
@@ -129,35 +131,60 @@ public class Model
     }
 
 
-    private void updateEnemyVelocity(Entity enemy)
+    public void updatePlayerVelocity()
     {
-        // updates enemy velocity using same calculations as projectile velocity calculation
-        Entity player   = entities.getFirst();
-        int deltaX      = player.getX() - enemy.getX();
-        int deltaY      = player.getY() - enemy.getY();
+        Player player               = (Player) entities.getFirst();
+        ActionTracker keysPressed   = ActionTracker.getInstance();
+        int distance                = 7;
 
-        int k         = 7;
-        double theta  = Math.toDegrees(Math.atan2(deltaY, deltaX));
-        theta         = Math.toRadians(theta);
-
-        // Velocity : change in x and y per update call
-        double dx   = k * Math.cos(theta);
-        double dy   = k * Math.sin(theta);
-
-        enemy.dx = (int) dx;
-        enemy.dy = (int) dy;
+        if (!(keysPressed.isDown() || keysPressed.isUp()) || (keysPressed.isDown() && keysPressed.isUp()))
+        {
+            player.dy = 0;
+        }
+        else if (keysPressed.isUp())
+        {
+            player.dy = -distance;
+        }
+        else if (keysPressed.isDown())
+        {
+            player.dy = distance;
+        }
+        
+        if (!(keysPressed.isLeft() || keysPressed.isRight()) || (keysPressed.isLeft() && keysPressed.isRight()))
+        {
+            player.dx = 0;
+        }
+        else if (keysPressed.isLeft())
+        {
+            player.dx = -distance;
+        }
+        else if (keysPressed.isRight())
+        {
+            player.dx = distance;
+        }
     }
 
-    /**
-     *
-     * @param dx
-     * @param dy
-     */
-    public void updatePlayer(int dx, int dy)
-    {
-        Player p = (Player) entities.getFirst();
 
-        p.translate(dx, dy);
+    private void updateEnemyVelocity(Entity enemy)
+    {
+        if (!enemy.isColliding)
+        {
+            // updates enemy velocity using same calculations as projectile velocity calculation
+            Entity player   = entities.getFirst();
+            int deltaX      = player.getX() - enemy.getX();
+            int deltaY      = player.getY() - enemy.getY();
+
+            int k         = 8;
+            double theta  = Math.toDegrees(Math.atan2(deltaY, deltaX));
+            theta         = Math.toRadians(theta);
+
+            // Velocity : change in x and y per update call
+            double dx   = k * Math.cos(theta);
+            double dy   = k * Math.sin(theta);
+
+            enemy.dx = (int) dx;
+            enemy.dy = (int) dy;
+        }
     }
 
 
@@ -168,12 +195,189 @@ public class Model
     {
         for(Entity e : entities)
         {
-            if (e.getClass() == Enemy.class)
+            e.translate();
+
+            if (e.getClass() == Player.class)
+            {
+                updatePlayerVelocity();
+            }
+            else if (e.getClass() == Enemy.class)
             {
                 updateEnemyVelocity(e);
             }
+        }
+    }
 
-            e.translate();
+
+    public void removeInactive()
+    {
+        LinkedList<Entity> inactiveEntities = new LinkedList<>();
+        LinkedList<Entity> itemsGenerated   = new LinkedList<>();
+        int enemiesRemoved = 0;
+
+        for (Entity e : entities)
+        {
+            if(!e.isActive() && e.getClass() != Player.class)
+            {
+                inactiveEntities.add(e);
+                if (e.getClass() == Enemy.class)
+                {
+                    enemiesRemoved++;
+
+                    // probability of item generating is 1/14
+                    boolean itemIsGenerated = r.nextInt(14) == 0;
+
+                    if (itemIsGenerated)
+                    {
+                        itemsGenerated.add(new Item(e));
+                    }
+                }
+            }
+        }
+
+        currentEnemies -= enemiesRemoved;
+        entities.removeAll(inactiveEntities);
+        entities.addAll(itemsGenerated);
+    }
+
+    // check collisions and perform actions specific actions based on collision cases
+    public void checkCollisions()
+    {
+        Entity e1;
+        Entity e2;
+
+        // reset collision states for active entities
+        for (Entity e : entities)
+        {
+            e.isColliding = false;
+        }
+
+        // check for collisions
+        for(int i = 0; i < entities.size(); i++)
+        {
+            e1 = entities.get(i);
+
+            for (int j = i + 1; j < entities.size(); j++)
+            {
+                e2 = entities.get(j);
+
+                if(e1.collidesWith(e2))
+                {
+                    if (e1.getClass() == Player.class && e2.getClass() == Enemy.class)
+                    {
+                        // player interacts with enemy
+                        e1.setInactive();
+                    }
+                    else if (e1.getClass() == Player.class && e2.getClass() == Item.class)
+                    {
+                        // player interacts with item
+                        e2.setInactive();
+                    }
+                    else if (e1.getClass() == Enemy.class && e2.getClass() == Enemy.class)
+                    {
+                        // both are enemies very complicated
+
+                        e1.isColliding = true;
+                        e2.isColliding = true;
+
+                        // collision vectors(x and y component)
+                        int colVectorX = e2.getX() - e1.getX();
+                        int colVectorY = e2.getY() - e1.getY();
+
+                        // calculate distance
+                        double distance = (float) Math.sqrt((colVectorX * colVectorX) + (colVectorY * colVectorY));
+
+                        // calculate normalized collision vector = (direction)
+                        double normColVectorX = colVectorX / distance;
+                        double normColVectorY = colVectorY / distance;
+
+                        // relative velocity vector
+                        int relVelX = e1.dx - e2.dx;
+                        int relVelY = e1.dy - e2.dy;
+                        double speed = (relVelX * normColVectorX) + (relVelY * normColVectorY);
+
+                        if (speed < 0)
+                        {
+                            break;
+                        }
+
+                        // calculate and assign new velocities
+                        e1.dx -= (speed * normColVectorX);
+                        e1.dy -= (speed * normColVectorY);
+                        e2.dx += (speed * normColVectorX);
+                        e2.dy += (speed * normColVectorY);
+                    }
+                    else if ((e1.getClass() == Enemy.class && e2.getClass() == Projectile.class)
+                            || (e1.getClass() == Projectile.class && e2.getClass() == Enemy.class))
+                    {
+                        // when zombie hits projectile or projectile hits zombie
+                        e1.setInactive();
+                        e2.setInactive();
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void checkBoundaryCollisions()
+    {
+        for (Entity e : entities)
+        {
+            Class type = e.getClass();
+
+            if ( type == Player.class)
+            {
+                if ((e.dx < 0 && e.x < 0) || (e.dx > 0 && e.x >= screenWidth - e.getHitBox().width))
+                {
+                    // if player is moving left and hits left wall
+                    // or if player is moving right and hits right wall -> stop
+                    e.dx = 0;
+                }
+
+                if ((e.dy < 0 && e.y < 0) || (e.dy > 0 && e.y >= screenHeight - e.getHitBox().height))
+                {
+                    // if player is moving up and hits top wall
+                    // if player is moving down and hits lower wall -> stop
+                    e.dy = 0;
+                }
+            }
+            else
+            {
+                if (e.x < 0 || e.x > screenWidth - e.getHitBox().width)
+                {
+                    if (type == Projectile.class)
+                    {
+                        e.setInactive();
+                    }
+                    else
+                    {
+                        e.dx *= -2;
+                    }
+                }
+
+                if (e.y < 0 || e.y > screenHeight - e.getHitBox().height)
+                {
+                    if (type == Projectile.class)
+                    {
+                        e.setInactive();
+                    }
+                    else
+                    {
+                        e.dy *= -2;
+                    }
+                }
+            }
+
+            // in-case a game object slips through the border checks, removes it
+            int errorMargin = 40;
+
+            if ((e.x < -errorMargin || e.x > screenWidth + errorMargin) ||
+                    (e.y < -errorMargin || e.y > screenHeight + errorMargin))
+            {
+                if (e.getClass() != Player.class)
+                    e.setInactive();
+            }
         }
     }
 

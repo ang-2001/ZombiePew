@@ -40,13 +40,6 @@ public class GamePanel extends JPanel
         addMouseListener(new MouseHandler());
         addKeyListener(new KeyHandler());
 
-        // temporary placement of game initiation(to be moved to an actual button)
-        try {
-            queue.put(new NewGameMessage(dimensions.width, dimensions.height, spriteSize));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         // defines delay in message generation for game updates = ~60 refreshes/sec
         int REFRESH_DELAY = 1000 / 60;
 
@@ -54,12 +47,11 @@ public class GamePanel extends JPanel
         int FIRE_RATE_DELAY = 1000 / 5;
 
         // defines delay in message generation for enemy creation = ~2 enemies/sec
-        int ENEMY_CREATION_DELAY = 1000 / 2;
+        int SPAWN_DELAY = 1000 / 10;
 
         // timer that should handle all animations(movement)
         animationTimer = new Timer(REFRESH_DELAY, e -> {
             try {
-                queue.put(new UpdatePlayerMessage());
                 queue.put(new UpdateEntitiesMessage());
 
             } catch (InterruptedException ex) {
@@ -78,22 +70,42 @@ public class GamePanel extends JPanel
         });
 
         // timer for rate of enemy creation
-        enemyTimer = new Timer(ENEMY_CREATION_DELAY, e -> {
+        enemyTimer = new Timer(SPAWN_DELAY, e -> {
             try {
                 queue.put(new CreateEnemyMessage());
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
         });
-        // add in another method later during screen switching
-        animationTimer.start();
-        projectileTimer.start();
-        enemyTimer.start();
 
         this.setFocusable(true);
         this.setDoubleBuffered(true);
     }
 
+
+    public void start()
+    {
+        // temporary placement of game initiation(to be moved to an actual button)
+        try {
+            queue.put(new NewGameMessage(dimensions.width, dimensions.height, spriteSize));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // add in another method later during screen switching
+        animationTimer.start();
+        projectileTimer.start();
+        enemyTimer.start();
+    }
+
+
+    public void stop()
+    {
+        animationTimer.stop();
+        projectileTimer.stop();
+        enemyTimer.stop();
+        keysPressed.reset();
+    }
     /**
      *
      * @param info
@@ -143,6 +155,11 @@ public class GamePanel extends JPanel
                 {
                     g2.setColor(Color.RED);
                     g2.fillRect(e.getX(), e.getY(), spriteSize, spriteSize);
+                }
+                else if (e.getClass() == Item.class)
+                {
+                    g2.setColor(Color.GREEN);
+                    g2.fillOval(e.getX(), e.getY(), spriteSize, spriteSize);
                 }
             }
         }

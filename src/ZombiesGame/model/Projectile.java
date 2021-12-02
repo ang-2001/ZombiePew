@@ -12,8 +12,7 @@ public class Projectile extends Entity
      */
     public Projectile(Entity e, int dx, int dy)
     {
-        this.x = e.x;
-        this.y = e.y;
+        super(e.x, e.y);
 
         this.dx = dx;
         this.dy = dy;
@@ -30,5 +29,18 @@ public class Projectile extends Entity
         int hitboxHeight = 32;
 
         return new Rectangle(x + hitboxWidth/2, y + hitboxHeight/2, hitboxWidth, hitboxWidth);
+    }
+
+    @Override
+    public boolean collidesWith(Entity e)
+    {
+        boolean hasCollision = getHitBox().intersects(e.getHitBox());
+        Class type = e.getClass();
+
+        if (type == Enemy.class && hasCollision)
+        {
+            return true;
+        }
+        return false;
     }
 }

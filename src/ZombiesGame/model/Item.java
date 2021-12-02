@@ -1,33 +1,33 @@
 package ZombiesGame.model;
 
-public class Item
+import java.awt.*;
+
+public class Item extends Entity
 {
-    int fireRate;
-    int x, y;
-
-    public int getX(){
-        // some code here
-        return x;
+    public Item(int x, int y) {
+        super(x, y);
     }
 
-    public int getY()
+
+    public Item (Entity e)
     {
-        return y;
+        super(e.x, e.y);
     }
 
-    public void remove()
+
+    @Override
+    public Rectangle getHitBox()
     {
-        // some code here
+        int hitboxHeight = 64;
+        int hitboxWidth = 64;
+
+        return new Rectangle(x, y, hitboxWidth, hitboxHeight);
     }
 
-    public void generateNewPos()
-    {
-        // some code here
-    }
 
-    public int getFireRate()
+    @Override
+    public boolean collidesWith(Entity e)
     {
-        // some code here
-        return fireRate;
+        return false;
     }
 }
