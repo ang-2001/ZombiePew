@@ -33,9 +33,9 @@ public class View extends JFrame
         layout = new CardLayout();
 
         cardPanel = new JPanel(layout);
-        startPanel = new StartPanel(queue);
+        startPanel = new StartPanel(queue, new Dimension(WIDTH, HEIGHT));
         gamePanel = new GamePanel(queue, TILE_SIZE, new Dimension(WIDTH, HEIGHT));
-        gameOverPanel = new GameOverPanel(queue, TILE_SIZE, new Dimension(WIDTH, HEIGHT));
+        gameOverPanel = new GameOverPanel(queue, new Dimension(WIDTH, HEIGHT));
 
         cardPanel.add(startPanel, "startPanel");
         cardPanel.add(gamePanel, "gamePanel");

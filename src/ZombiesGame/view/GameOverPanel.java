@@ -13,14 +13,12 @@ public class GameOverPanel extends JPanel {
     BlockingQueue<Message> queue;
 
     private Dimension dimensions;
-    private int spriteSize;
 
     private JLabel scoreLabel;
     private JLabel highScoreLabel;
 
-    public GameOverPanel(BlockingQueue<Message> queue, int spriteSize, Dimension d) {
+    public GameOverPanel(BlockingQueue<Message> queue, Dimension d) {
         this.dimensions = d;
-        this.spriteSize = spriteSize;
         this.queue = queue;
 
         BoxLayout startLayout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
@@ -32,49 +30,49 @@ public class GameOverPanel extends JPanel {
 
         JLabel title = new JLabel();
         String labelText = String.format("<html><div style = 'text-align: center;' " +
-                "'WIDTH=%d>%s</div></html>", d.width/2, "GAME OVER");
+                "'WIDTH=%d>%s</div></html>", dimensions.width/2, "GAME OVER");
 
         title.setText(labelText);
-        title.setForeground(Color.WHITE);
-        title.setFont(new Font("Serif", Font.PLAIN, d.height/7));
+        title.setForeground(Color.RED);
+        title.setFont(new Font("Serif", Font.PLAIN, dimensions.height/7));
 
         titlePanel.add(title);
 
         scoreLabel = new JLabel();
         scoreLabel.setForeground(Color.WHITE);
-        scoreLabel.setFont(new Font("Serif", Font.PLAIN, 30));
-
-        titlePanel.add(scoreLabel);
-
+        scoreLabel.setFont(new Font("Serif", Font.PLAIN, dimensions.height/20));
 
         highScoreLabel = new JLabel();
         highScoreLabel.setForeground(Color.WHITE);
-        highScoreLabel.setFont(new Font("Serif", Font.PLAIN, 30));
-
-        titlePanel.add(highScoreLabel);
+        highScoreLabel.setFont(new Font("Serif", Font.PLAIN, dimensions.height/20));
 
 
         JButton playAgainButton = new JButton("PLAY AGAIN");
-        playAgainButton.setFont(new Font("Serif", Font.PLAIN, d.height/20));
+        playAgainButton.setFont(new Font("Serif", Font.PLAIN, dimensions.height/20));
         playAgainButton.setForeground(Color.WHITE);
 
-
-        // START BUTTON : REMOVES THE 3D LOOK OF THE BUTTON
+        // PLAY AGAIN BUTTON : REMOVES THE 3D LOOK OF THE BUTTON
         playAgainButton.setBorderPainted(true);
         playAgainButton.setFocusPainted(false);
         playAgainButton.setContentAreaFilled(false);
 
+        titlePanel.setAlignmentX(CENTER_ALIGNMENT);
+        scoreLabel.setAlignmentX(CENTER_ALIGNMENT);
+        highScoreLabel.setAlignmentX(CENTER_ALIGNMENT);
+        playAgainButton.setAlignmentX(CENTER_ALIGNMENT);
 
-        titlePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        playAgainButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        add(Box.createRigidArea(new Dimension(0,d.height/10)));
+        add(Box.createRigidArea(new Dimension(0,dimensions.height/10)));
         add(titlePanel);
-        add(Box.createRigidArea(new Dimension(0,d.height/15)));
+        add(Box.createRigidArea(new Dimension(0,dimensions.height/25)));
+        add(scoreLabel);
+        add(Box.createRigidArea(new Dimension(0,dimensions.height/30)));
+        add(highScoreLabel);
+        add(Box.createRigidArea(new Dimension(0,dimensions.height/15)));
         add(playAgainButton);
-        add(Box.createRigidArea(new Dimension(0,d.height)));
+        add(Box.createRigidArea(new Dimension(0, dimensions.height)));
 
-        // START BUTTON: ACTION LISTENER
+        // PLAY AGAIN BUTTON: ACTION LISTENER
         playAgainButton.addActionListener(e -> {
             try {
                 queue.put(new StartGameMessage());
@@ -84,9 +82,15 @@ public class GameOverPanel extends JPanel {
         });
     }
 
-    public void updateScore(GameInfo info){
+    @Override
+    public Dimension getPreferredSize()
+    {
+        return dimensions;
+    }
+
+    public void updateScore(GameInfo info)
+    {
         scoreLabel.setText("Score: " + info.getScore());
         highScoreLabel.setText("High Score: " + info.getHighScore());
-
     }
 }

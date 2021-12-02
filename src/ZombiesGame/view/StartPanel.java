@@ -11,19 +11,14 @@ import java.util.concurrent.BlockingQueue;
 
 public class StartPanel extends JPanel{
 
-    private final int SCALE = 4;
-    private final int BASE_TILE_SIZE = 16;
-    private final int SCALED_TILE_SIZE = SCALE * BASE_TILE_SIZE;
-
-    private final int width = 16 * SCALED_TILE_SIZE;
-    private final int height = 12 * SCALED_TILE_SIZE;
-    BlockingQueue<Message> queue;
+    private Dimension dimensions;
+    private BlockingQueue<Message> queue;
 
     private JLabel highScoreLabel;
 
-    public StartPanel(BlockingQueue<Message> queue){
+    public StartPanel(BlockingQueue<Message> queue, Dimension d){
         this.queue = queue;
-
+        this.dimensions = d;
 
 
         BoxLayout startLayout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
@@ -35,25 +30,24 @@ public class StartPanel extends JPanel{
 
         JLabel title = new JLabel();
         String labelText = String.format("<html><div style = 'text-align: center;' " +
-                "'WIDTH=%d>%s</div></html>", width/2, "CALL OF PEW PEW");
+                "'WIDTH=%d>%s</div></html>", dimensions.width/2, "PEW PEW");
 
         title.setText(labelText);
         title.setForeground(Color.RED);
-        title.setFont(new Font("Serif", Font.PLAIN, height/7));
+        title.setFont(new Font("Serif", Font.PLAIN, dimensions.height/7));
 
         titlePanel.add(title);
 
 
+        // HIGH SCORE TEXT: FONT SIZE, COLOR
         highScoreLabel = new JLabel();
         highScoreLabel.setForeground(Color.WHITE);
-        highScoreLabel.setFont(new Font("Serif", Font.PLAIN, 30));
-        highScoreLabel.setText("High score: ");
+        highScoreLabel.setFont(new Font("Serif", Font.PLAIN, dimensions.height/20));
 
-        titlePanel.add(highScoreLabel);
 
         // START BUTTON: SETS FONT STYLE, SIZE, COLOR
         JButton startButton = new JButton("START");
-        startButton.setFont(new Font("Serif", Font.PLAIN, height/20));
+        startButton.setFont(new Font("Serif", Font.PLAIN, dimensions.height/20));
         startButton.setForeground(Color.WHITE);
 
 
@@ -64,13 +58,16 @@ public class StartPanel extends JPanel{
 
         // required to center components, very lame
         titlePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        highScoreLabel.setAlignmentX(CENTER_ALIGNMENT);
         startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        add(Box.createRigidArea(new Dimension(0,height/10)));
+        add(Box.createRigidArea(new Dimension(0,dimensions.height/10)));
         add(titlePanel);
-        add(Box.createRigidArea(new Dimension(0,height/15)));
+        add(Box.createRigidArea(new Dimension(0,dimensions.height/15)));
+        add(highScoreLabel);
+        add(Box.createRigidArea(new Dimension(0,dimensions.height/15)));
         add(startButton);
-        add(Box.createRigidArea(new Dimension(0,height)));
+        add(Box.createRigidArea(new Dimension(0, dimensions.height)));
 
         try {
             queue.put(new FirstScreenMessage());
@@ -92,12 +89,11 @@ public class StartPanel extends JPanel{
     @Override
     public Dimension getPreferredSize()
     {
-        return new Dimension(width, height);
+        return dimensions;
     }
 
-    public void updateScore(GameInfo info){
-        System.out.println("Entered this function");
+    public void updateScore(GameInfo info)
+    {
         highScoreLabel.setText("High Score: " + info.getHighScore());
-
     }
 }
