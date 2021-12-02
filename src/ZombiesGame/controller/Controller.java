@@ -30,7 +30,6 @@ public class Controller
         valves.add(new CreateEnemyValve());
         valves.add(new UpdateEntitiesValve());
         valves.add(new StartGameValve());
-
         valves.add(new FirstScreenValve());
     }
 
