@@ -4,21 +4,20 @@ import java.awt.*;
 
 public abstract class Entity {
 	// positions and states
-	private String status;
+	protected boolean isColliding;
+	private boolean isActive;
 	protected int x;
 	protected int y;
 	protected int dx;
 	protected int dy;
 
-	/**
-	 * translates position of entity by set amount defined by dx and dy
-	 * @param dx total change in x performed in one translate call
-	 * @param dy total change in y performed in one translate call
-	 */
-	public void translate(int dx, int dy)
+
+	public Entity(int x, int y)
 	{
-		x += dx;
-		y += dy;
+		isColliding = false;
+		isActive = true;
+		this.x  = x;
+		this.y  = y;
 	}
 
 
@@ -29,20 +28,13 @@ public abstract class Entity {
 	}
 
 
-	/**
-	 *
-	 * @param status state of the entity(dead or alive)
-	 */
-	public void setStatus(String status) {
-		this.status = status;
+	public void setInactive()
+	{
+		isActive = false;
 	}
 
-
-	public abstract Rectangle getHitBox();
-
-
 	/**
-	 * this method returns the x component of entity position
+	 * returns the x component of entity position
 	 * @return x component of position
 	 */
 	public int getX()
@@ -59,13 +51,12 @@ public abstract class Entity {
 		return y;
 	}
 
-
-	/**
-	 * gets the status of entity
-	 * @return status of entity (dead or alive)
-	 */
-	public String getStatus()
+	public boolean isActive()
 	{
-		return status;
+		return this.isActive;
 	}
+
+	public abstract Rectangle getHitBox();
+
+	public abstract boolean collidesWith(Entity e);
 }

@@ -1,6 +1,6 @@
 package ZombiesGame.view;
 
-import ZombiesGame.messages.ChangeGameStateMessage;
+import ZombiesGame.messages.StartGameMessage;
 import ZombiesGame.messages.Message;
 
 import javax.swing.*;
@@ -61,7 +61,7 @@ public class StartPanel extends JPanel{
         // START BUTTON: ACTION LISTENER
         startButton.addActionListener(e -> {
             try {
-                queue.put(new ChangeGameStateMessage(true));
+                queue.put(new StartGameMessage());
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }

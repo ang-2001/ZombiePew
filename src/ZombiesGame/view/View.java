@@ -50,9 +50,24 @@ public class View extends JFrame
         setVisible(true);
     }
 
-    public void changeLayout(){
-        layout.show(cardPanel, "gamePanel");
-        gamePanel.requestFocus();
+    public void switchPanel(String panel)
+    {
+        layout.show(cardPanel, panel);
+
+        if (panel.equals("startPanel"))
+        {
+            startPanel.requestFocus();
+        }
+        else if (panel.equals("gamePanel"))
+        {
+            gamePanel.requestFocus();
+            gamePanel.start();
+        }
+        else if (panel.equals("gameOverPanel"))
+        {
+
+        }
+
     }
 
     public void updateView(GameInfo info)

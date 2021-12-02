@@ -5,8 +5,7 @@ import java.awt.*;
 public class Player extends Entity {
 
     public Player(int x, int y) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
     }
 
 
@@ -21,5 +20,19 @@ public class Player extends Entity {
         int hitboxHeight = 48;
 
         return new Rectangle(x + hitboxWidth/2, y + hitboxHeight/2, hitboxWidth, hitboxWidth);
+    }
+
+
+    @Override
+    public boolean collidesWith(Entity e)
+    {
+        Class type = e.getClass();
+        boolean hasCollision = getHitBox().intersects(e.getHitBox()) && this != e;
+
+        if ((type == Enemy.class || type == Item.class) && hasCollision)
+        {
+            return true;
+        }
+        return false;
     }
 }

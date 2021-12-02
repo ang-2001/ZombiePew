@@ -8,19 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PlayerTester
 {
-
-    @Test
-    public void testTranslate()
-    {
-        Player p = new Player(100, 100);
-
-        p.translate(10, 10);
-        int x = p.getX();
-
-        assertEquals(110, x, "expected value was 110, actual value was: " + x);
-    }
-
-
     @Test
     public void testHitBox()
     {
@@ -28,8 +15,8 @@ public class PlayerTester
 
         Rectangle hitbox = p.getHitBox();
 
-        boolean equalPosition = (p.getX() == hitbox.x) && (p.getY() == hitbox.y);
-        boolean equalDimensions = (hitbox.width == 32) && (hitbox.height == 32);
+        boolean equalPosition = (p.getX() + hitbox.width/2 == hitbox.x) && (p.getY() + hitbox.height/2 == hitbox.y);
+        boolean equalDimensions = (hitbox.width == 48) && (hitbox.height == 48);
 
         assertTrue(equalPosition && equalDimensions,
                 "expected output was true, actual value was false, positions not equal or hitbox not correct dimensions");
