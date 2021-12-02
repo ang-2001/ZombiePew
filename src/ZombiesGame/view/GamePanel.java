@@ -65,7 +65,7 @@ public class GamePanel extends JPanel
         int FIRE_RATE_DELAY = 1000 / 5;
 
         // defines delay in message generation for enemy creation = ~2 enemies/sec
-        int SPAWN_DELAY = 1000 / 10;
+        int SPAWN_DELAY = 1000 / 20;
 
         // timer that should handle all animations(movement)
         animationTimer = new Timer(REFRESH_DELAY, e -> {
