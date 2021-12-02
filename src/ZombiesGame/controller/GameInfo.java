@@ -9,10 +9,14 @@ import java.util.List;
 public class GameInfo
 {
     private LinkedList<Entity> entities;
+    private int score;
+    private int highScore;
 
     public GameInfo(Model m)
     {
         entities = m.getEntities();
+        score = m.getScore();
+        highScore = m.getHighScore();
     }
 
 
@@ -20,4 +24,16 @@ public class GameInfo
     {
         return entities;
     }
+
+    public int getScore(){
+        return score;
+    }
+
+    public int getHighScore(){
+        return highScore;
+    }
+
+
+
+
 }

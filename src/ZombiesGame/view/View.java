@@ -78,4 +78,9 @@ public class View extends JFrame
     {
         gamePanel.updateView(info);
     }
+
+    public void updateScore(GameInfo info) {
+        startPanel.updateScore(info);
+        gameOverPanel.updateScore(info);
+    }
 }

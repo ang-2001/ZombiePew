@@ -1,5 +1,6 @@
 package ZombiesGame.view;
 
+import ZombiesGame.controller.GameInfo;
 import ZombiesGame.messages.Message;
 import ZombiesGame.messages.StartGameMessage;
 
@@ -13,6 +14,9 @@ public class GameOverPanel extends JPanel {
 
     private Dimension dimensions;
     private int spriteSize;
+
+    private JLabel scoreLabel;
+    private JLabel highScoreLabel;
 
     public GameOverPanel(BlockingQueue<Message> queue, int spriteSize, Dimension d) {
         this.dimensions = d;
@@ -35,6 +39,20 @@ public class GameOverPanel extends JPanel {
         title.setFont(new Font("Serif", Font.PLAIN, d.height/7));
 
         titlePanel.add(title);
+
+        scoreLabel = new JLabel();
+        scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setFont(new Font("Serif", Font.PLAIN, 30));
+
+        titlePanel.add(scoreLabel);
+
+
+        highScoreLabel = new JLabel();
+        highScoreLabel.setForeground(Color.WHITE);
+        highScoreLabel.setFont(new Font("Serif", Font.PLAIN, 30));
+
+        titlePanel.add(highScoreLabel);
+
 
         JButton playAgainButton = new JButton("PLAY AGAIN");
         playAgainButton.setFont(new Font("Serif", Font.PLAIN, d.height/20));
@@ -64,5 +82,11 @@ public class GameOverPanel extends JPanel {
                 ex.printStackTrace();
             }
         });
+    }
+
+    public void updateScore(GameInfo info){
+        scoreLabel.setText("Score: " + info.getScore());
+        highScoreLabel.setText("High Score: " + info.getHighScore());
+
     }
 }
