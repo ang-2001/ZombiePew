@@ -22,6 +22,7 @@ public class View extends JFrame
     private JPanel cardPanel;
     private StartPanel startPanel;
     private GamePanel gamePanel;
+    private GameOverPanel gameOverPanel;
 
 
     private BlockingQueue<Message> queue;
@@ -36,9 +37,11 @@ public class View extends JFrame
         cardPanel = new JPanel(layout);
         startPanel = new StartPanel(queue);
         gamePanel = new GamePanel(queue, TILE_SIZE, new Dimension(WIDTH, HEIGHT));
+        gameOverPanel = new GameOverPanel(queue, TILE_SIZE, new Dimension(WIDTH, HEIGHT));
 
         cardPanel.add(startPanel, "startPanel");
         cardPanel.add(gamePanel, "gamePanel");
+        cardPanel.add(gameOverPanel, "gameOverPanel");
 
         add(cardPanel);
 
@@ -65,7 +68,8 @@ public class View extends JFrame
         }
         else if (panel.equals("gameOverPanel"))
         {
-
+            gameOverPanel.requestFocus();
+            gamePanel.stop();
         }
 
     }

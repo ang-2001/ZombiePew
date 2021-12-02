@@ -105,6 +105,7 @@ public class GamePanel extends JPanel
         projectileTimer.stop();
         enemyTimer.stop();
         keysPressed.reset();
+
     }
     /**
      *

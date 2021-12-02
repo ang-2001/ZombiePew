@@ -152,7 +152,7 @@ public class Controller
             Entity player = model.getEntities().getFirst();
             if (!player.isActive())
             {
-                // view.switchPanel("gameOverPanel");
+                 view.switchPanel("gameOverPanel");
             }
             model.removeInactive();
 
@@ -175,7 +175,9 @@ public class Controller
 
             StartGameMessage m = (StartGameMessage) message;
 
+
             view.switchPanel("gamePanel");
+
 
 
             return ValveResponse.EXECUTED;
