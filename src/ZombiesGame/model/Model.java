@@ -15,17 +15,20 @@ public class Model
     private int screenWidth;
     private int screenHeight;
     private int spriteSize;
+
+    private int enemyVelocity;
     private int currentEnemies;
     private int maxEnemies;
 
-    private int score = 0;
-    private int highScore = 0;
+    private int score;
+    private int highScore;
     private File scoreFile;
-    private static final int NORMAL_POINT = 5;
-    private static final int ITEM_POINT = 50;
 
-    private double zombieVelocity = 4;
-    private int scoreToLevelUp = 100;
+    private static final int NORMAL_POINT   = 5;
+    private static final int ITEM_POINT     = 50;
+    private final int EASY                  = 150;
+    private final int NORMAL                = 250;
+    private final int HARD                  = 350;
 
     private final Random r = new Random();
 
@@ -46,14 +49,16 @@ public class Model
 
     public void createNewGame(int width, int height, int spriteSize)
     {
-        this.screenWidth      = width;
-        this.screenHeight     = height;
-        this.spriteSize       = spriteSize;
-        this.maxEnemies       = 8;
-        this.currentEnemies   = 0;
-        this.zombieVelocity   = 4;
-        this.scoreToLevelUp   = 100;
-        resetScore();
+        this.screenWidth        = width;
+        this.screenHeight       = height;
+        this.spriteSize         = spriteSize;
+
+        this.maxEnemies         = 6;
+        this.currentEnemies     = 0;
+        this.enemyVelocity      = 4;
+
+        this.score              = 0;
+
         entities.clear();
     }
 
@@ -104,7 +109,7 @@ public class Model
 
             if (isOnXAxis) {
                 // generates an x-coords, taking into account the size of the sprite (64-960)
-                x = r.nextInt(screenWidth - (spriteSize)) + spriteSize;
+                x = r.nextInt(screenWidth - spriteSize) + spriteSize;
 
                 // random boolean to determine whether the enemy spawns on the bottom or top of screen
                 boolean isOnBottom = r.nextBoolean();
@@ -181,22 +186,15 @@ public class Model
             int deltaX      = player.getX() - enemy.getX();
             int deltaY      = player.getY() - enemy.getY();
 
+            double theta  = Math.toDegrees(Math.atan2(deltaY, deltaX));
+            theta         = Math.toRadians(theta);
 
-            if (getScore() >= scoreToLevelUp) {
-                maxEnemies += 1;
-                zombieVelocity += 0.5;
-                scoreToLevelUp += 100;
-                System.out.println("Zombie velocity: " + zombieVelocity);
-            }
-                double theta  = Math.toDegrees(Math.atan2(deltaY, deltaX));
-                theta         = Math.toRadians(theta);
+            // Velocity : change in x and y per update call
+            double dx   = enemyVelocity * Math.cos(theta);
+            double dy   = enemyVelocity * Math.sin(theta);
 
-                // Velocity : change in x and y per update call
-                double dx   = zombieVelocity * Math.cos(theta);
-                double dy   = zombieVelocity * Math.sin(theta);
-
-                enemy.dx = (int) dx;
-                enemy.dy = (int) dy;
+            enemy.dx = (int) dx;
+            enemy.dy = (int) dy;
 
         }
     }
@@ -228,6 +226,7 @@ public class Model
         LinkedList<Entity> inactiveEntities = new LinkedList<>();
         LinkedList<Entity> itemsGenerated   = new LinkedList<>();
         int enemiesRemoved = 0;
+//        System.out.println(entities.size());
 
         for (Entity e : entities)
         {
@@ -285,8 +284,7 @@ public class Model
                     else if (e1.getClass() == Player.class && e2.getClass() == Item.class)
                     {
                         // player interacts with item
-                        incrementScore(ITEM_POINT);
-                        System.out.println("Score: " + score);
+                        updateScore(ITEM_POINT);
                         e2.setInactive();
                     }
                     else if (e1.getClass() == Enemy.class && e2.getClass() == Enemy.class)
@@ -327,8 +325,7 @@ public class Model
                             || (e1.getClass() == Projectile.class && e2.getClass() == Enemy.class))
                     {
                         // when zombie hits projectile or projectile hits zombie
-                        incrementScore(NORMAL_POINT);
-                        System.out.println("Score: " + score);
+                        updateScore(NORMAL_POINT);
                         e1.setInactive();
                         e2.setInactive();
                     }
@@ -362,7 +359,8 @@ public class Model
             }
             else
             {
-                if (e.x < 0 || e.x > screenWidth - e.getHitBox().width)
+                // e.x > screenWidth - e.getHitBox.wdith
+                if (e.x < 0 || e.x > screenWidth)
                 {
                     if (type == Projectile.class)
                     {
@@ -374,7 +372,8 @@ public class Model
                     }
                 }
 
-                if (e.y < 0 || e.y > screenHeight - e.getHitBox().height)
+                // e.y > screenHeight - e.getHitBox.height
+                if (e.y < 0 || e.y > screenHeight)
                 {
                     if (type == Projectile.class)
                     {
@@ -388,7 +387,8 @@ public class Model
             }
 
             // in-case a game object slips through the border checks, removes it
-            int errorMargin = 40;
+            // the smaller the margin, the easier they get removed
+            int errorMargin = 20;
 
             if ((e.x < -errorMargin || e.x > screenWidth + errorMargin) ||
                     (e.y < -errorMargin || e.y > screenHeight + errorMargin))
@@ -399,19 +399,35 @@ public class Model
         }
     }
 
-    public int getScore(){
+    public int getScore()
+    {
         return score;
     }
 
-    public void incrementScore(int scoreValue){
+    public void updateScore(int scoreValue)
+    {
         this.score += scoreValue;
+
+        // if score reaches a certain thresh hold, increase difficulty
+        if (score > EASY)
+        {
+            maxEnemies = 8;
+            enemyVelocity = 5;
+        }
+        else if (score > NORMAL)
+        {
+            maxEnemies = 10;
+            enemyVelocity = 6;
+        }
+        else if(score > HARD)
+        {
+            maxEnemies = 50;
+            enemyVelocity = 8;
+        }
     }
 
-    public void resetScore(){
-        this.score = 0;
-    }
-
-    public void saveScoreToFile() {
+    public void saveScoreToFile()
+    {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(scoreFile));
             bw.write(String.valueOf(getScore()));
@@ -422,7 +438,8 @@ public class Model
         }
     }
 
-    public String checkScoreInFile(){
+    public String checkScoreInFile()
+    {
         String firstLine = "";
         try {
             BufferedReader br = new BufferedReader(new FileReader(scoreFile));
@@ -435,7 +452,8 @@ public class Model
         return firstLine;
     }
 
-    public void setHighScore(){
+    public void setHighScore()
+    {
         String keptScore = checkScoreInFile();
         if (getScore() > Integer.parseInt(keptScore)){
             saveScoreToFile();
@@ -447,12 +465,9 @@ public class Model
         }
     }
 
-    public int getHighScore(){
+    public int getHighScore()
+    {
         return highScore;
-    }
-
-    public void increaseLevel(){
-
     }
 
 
