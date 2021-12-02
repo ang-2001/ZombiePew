@@ -3,9 +3,7 @@ package ZombiesGame.view;
 
 import ZombiesGame.controller.GameInfo;
 import ZombiesGame.messages.*;
-import ZombiesGame.model.Entity;
-import ZombiesGame.model.Player;
-import ZombiesGame.model.Projectile;
+import ZombiesGame.model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,9 +18,13 @@ public class GamePanel extends JPanel
     private Dimension dimensions;
     private int spriteSize;
 
+    private Timer animationTimer;
+    private Timer projectileTimer;
+    private Timer enemyTimer;
 
     private LinkedList<Entity> entities;
     private Point mousePosition;
+
     /**
      * constructor for GamePanel class that should initialize panelWidth and panelHeight,
      * which will be used to set up the preferred size of the panel
@@ -45,11 +47,17 @@ public class GamePanel extends JPanel
             e.printStackTrace();
         }
 
-        // timer that should handle all animations(movement)
-        // defines delay in message generation for messages involved in animation = ~60 refreshes/sec
+        // defines delay in message generation for game updates = ~60 refreshes/sec
         int REFRESH_DELAY = 1000 / 60;
 
-        Timer animationTimer = new Timer(REFRESH_DELAY, e -> {
+        // defines delay in message generation for projectile creation = ~5 projectiles/sec
+        int FIRE_RATE_DELAY = 1000 / 5;
+
+        // defines delay in message generation for enemy creation = ~2 enemies/sec
+        int ENEMY_CREATION_DELAY = 1000 / 2;
+
+        // timer that should handle all animations(movement)
+        animationTimer = new Timer(REFRESH_DELAY, e -> {
             try {
                 queue.put(new UpdatePlayerMessage());
                 queue.put(new UpdateEntitiesMessage());
@@ -60,10 +68,7 @@ public class GamePanel extends JPanel
         });
 
         // timer for rate of projectile generation
-        // defines delay for projectile creation message = ~5 projectiles/sec
-        int FIRE_RATE_DELAY = 1000 / 5;
-
-        Timer fireRateTimer = new Timer(FIRE_RATE_DELAY, e -> {
+        projectileTimer = new Timer(FIRE_RATE_DELAY, e -> {
             try {
                 if (keysPressed.isClicked())
                     queue.put(new CreateProjectileMessage(mousePosition));
@@ -72,10 +77,18 @@ public class GamePanel extends JPanel
             }
         });
 
-
+        // timer for rate of enemy creation
+        enemyTimer = new Timer(ENEMY_CREATION_DELAY, e -> {
+            try {
+                queue.put(new CreateEnemyMessage());
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        });
         // add in another method later during screen switching
         animationTimer.start();
-        fireRateTimer.start();
+        projectileTimer.start();
+        enemyTimer.start();
 
         this.setFocusable(true);
         this.setDoubleBuffered(true);
@@ -123,12 +136,16 @@ public class GamePanel extends JPanel
                 }
                 else if (e.getClass() == Projectile.class)
                 {
+                    g2.setColor(Color.BLACK);
                     g2.fillOval(e.getX(), e.getY(), spriteSize/4, spriteSize/4);
+                }
+                else if (e.getClass() == Enemy.class)
+                {
+                    g2.setColor(Color.RED);
+                    g2.fillRect(e.getX(), e.getY(), spriteSize, spriteSize);
                 }
             }
         }
-
-        g2.dispose();
     }
 
 

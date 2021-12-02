@@ -28,6 +28,7 @@ public class Controller
 
         valves.add(new NewGameValve());
         valves.add(new CreateProjectileValve());
+        valves.add(new CreateEnemyValve());
         valves.add(new UpdatePlayerValve());
         valves.add(new UpdateEntitiesValve());
         valves.add(new ChangeGameStateValve());
@@ -77,11 +78,11 @@ public class Controller
             NewGameMessage m = (NewGameMessage) message;
 
             // reset game state
-            model.createNewGame();
+            model.createNewGame(m.getWidth(),m.getHeight(),m.getSpriteSize());
 
             // sets player position relative to screen height and width( should be near centered)
 
-            model.createPlayer(m.getWidth(), m.getHeight(), m.getSpriteSize());
+            model.createPlayer();
 
             // send render data to View
             GameInfo data = model.getGameStatus();
@@ -106,6 +107,27 @@ public class Controller
             CreateProjectileMessage m = (CreateProjectileMessage) message;
 
             model.createProjectile(m.getMousePosition());
+            GameInfo data = model.getGameStatus();
+            view.updateView(data);
+
+            return ValveResponse.EXECUTED;
+        }
+    }
+
+
+    private class CreateEnemyValve implements Valve
+    {
+        @Override
+        public ValveResponse execute(Message message)
+        {
+            if (message.getClass() != CreateEnemyMessage.class)
+            {
+                return ValveResponse.MISS;
+            }
+
+            CreateEnemyMessage m = (CreateEnemyMessage) message;
+
+            model.createEnemy();
             GameInfo data = model.getGameStatus();
             view.updateView(data);
 
@@ -145,7 +167,8 @@ public class Controller
     }
 
 
-    private class UpdateEntitiesValve implements Valve {
+    private class UpdateEntitiesValve implements Valve
+    {
         @Override
         public ValveResponse execute(Message message) {
             if (message.getClass() != UpdateEntitiesMessage.class) {
@@ -162,8 +185,8 @@ public class Controller
         }
     }
 
-    private class ChangeGameStateValve implements Valve{
-
+    private class ChangeGameStateValve implements Valve
+    {
         @Override
         public ValveResponse execute(Message message) {
             if (message.getClass() != ChangeGameStateMessage.class)

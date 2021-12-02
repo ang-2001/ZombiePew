@@ -3,9 +3,6 @@ package ZombiesGame.model;
 import java.awt.*;
 
 public class Player extends Entity {
-    private final int HITBOX_WIDTH = 32;
-    private final int HITBOX_HEIGHT = 32;
-
 
     public Player(int x, int y) {
         this.x = x;
@@ -18,7 +15,11 @@ public class Player extends Entity {
      * @return Rectangle, created at player position, with height and width 3
      */
     @Override
-    public Rectangle getHitBox() {
-        return new Rectangle(getX(), getY(), HITBOX_WIDTH, HITBOX_HEIGHT);
+    public Rectangle getHitBox()
+    {
+        int hitboxWidth = 48;
+        int hitboxHeight = 48;
+
+        return new Rectangle(x + hitboxWidth/2, y + hitboxHeight/2, hitboxWidth, hitboxWidth);
     }
 }

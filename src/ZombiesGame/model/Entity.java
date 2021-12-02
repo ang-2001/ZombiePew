@@ -7,7 +7,8 @@ public abstract class Entity {
 	private String status;
 	protected int x;
 	protected int y;
-
+	protected int dx;
+	protected int dy;
 
 	/**
 	 * translates position of entity by set amount defined by dx and dy
@@ -21,13 +22,10 @@ public abstract class Entity {
 	}
 
 
-	/**
-	 * does nothing -- to be overriden by classes that need to use it(Zombie,Projectile)
-	 * otherwise, useless
-	 */
 	public void translate()
 	{
-		// does nothing -- to be overriden by classes that need to implement it
+		 x += dx;
+		 y += dy;
 	}
 
 
