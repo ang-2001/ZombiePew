@@ -24,6 +24,7 @@ public class GamePanel extends JPanel
 
     private LinkedList<Entity> entities;
     private Point mousePosition;
+    private SpriteData spriteData;
 
     private JLabel scoreLabel;
     private JLabel highScoreLabel;
@@ -39,6 +40,7 @@ public class GamePanel extends JPanel
         this.dimensions = d;
         this.spriteSize = spriteSize;
         keysPressed     = ActionTracker.getInstance();
+        this.spriteData = new SpriteData();
         this.queue      = queue;
 
         addMouseMotionListener(new MouseDraggedHandler());
@@ -157,6 +159,7 @@ public class GamePanel extends JPanel
 
         Graphics2D g2 = (Graphics2D) g;
 
+        g2.drawImage(spriteData.getBackground(), 0, 0, null);
         // these are just placeholders, will replace with sprites later
         if(entities != null)
         {
@@ -164,23 +167,19 @@ public class GamePanel extends JPanel
             {
                 if (e.getClass() == Player.class)
                 {
-                    g2.setColor(Color.BLACK);
-                    g2.fillRect(e.getX(), e.getY(), spriteSize, spriteSize);
+                    g2.drawImage(spriteData.getPlayerSprite(), e.getX(), e.getY(), spriteSize, spriteSize, null);
                 }
                 else if (e.getClass() == Projectile.class)
                 {
-                    g2.setColor(Color.BLACK);
-                    g2.fillOval(e.getX(), e.getY(), spriteSize/4, spriteSize/4);
+                    g2.drawImage(spriteData.getProjectileSprite(), e.getX(), e.getY(), spriteSize, spriteSize, null);
                 }
                 else if (e.getClass() == Enemy.class)
                 {
-                    g2.setColor(Color.RED);
-                    g2.fillRect(e.getX(), e.getY(), spriteSize, spriteSize);
+                    g2.drawImage(spriteData.getEnemySprite(), e.getX(), e.getY(), spriteSize, spriteSize, null);
                 }
                 else if (e.getClass() == Item.class)
                 {
-                    g2.setColor(Color.GREEN);
-                    g2.fillOval(e.getX(), e.getY(), spriteSize, spriteSize);
+                    g2.drawImage(spriteData.getItemSprite(), e.getX(), e.getY(), spriteSize, spriteSize, null);
                 }
             }
         }
