@@ -3,6 +3,7 @@ package ZombiesGame.model;
 import ZombiesGame.controller.GameInfo;
 
 import java.awt.*;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -16,11 +17,25 @@ public class Model
     private int currentEnemies;
     private int maxEnemies;
 
+    private int score = 0;
+    private int highScore = 0;
+    private File scoreFile;
+    private static final int POINTS_SCORED = 5;
+
     private final Random r = new Random();
 
     public Model()
     {
         entities    = new LinkedList<>();
+        try {
+            scoreFile = new File("score.txt");
+            if (scoreFile.createNewFile()) {
+                System.out.println("File created: " + scoreFile.getName());
+                saveScoreToFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -160,6 +175,56 @@ public class Model
 
             e.translate();
         }
+    }
+
+    public int getScore(){
+        return score;
+    }
+
+    public void incrementScore(){
+        this.score += POINTS_SCORED;
+    }
+
+    public void resetScore(){
+        this.score = 0;
+    }
+
+    public void saveScoreToFile() {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(scoreFile));
+            bw.write(String.valueOf(getScore()));
+            bw.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    public String checkScoreInFile(){
+        String firstLine = "";
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(scoreFile));
+            firstLine = br.readLine();
+            //System.out.println("Read score: " + firstLine);
+            br.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return firstLine;
+    }
+
+    public void setHighScore(){
+        String keptScore = checkScoreInFile();
+        if (getScore() > Integer.parseInt(keptScore)){
+            saveScoreToFile();
+            System.out.println("New high score is " + getScore() + ". Previous high score was " + keptScore);
+            highScore = getScore();
+        }
+        highScore = Integer.parseInt(keptScore);
+    }
+
+    public int getHighScore(){
+        return highScore;
     }
 
 
