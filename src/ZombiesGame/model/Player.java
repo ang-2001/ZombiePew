@@ -16,10 +16,10 @@ public class Player extends Entity {
     @Override
     public Rectangle getHitBox()
     {
-        int hitboxWidth = 48;
-        int hitboxHeight = 48;
+        int hitboxWidth = 64;
+        int hitboxHeight = 64;
 
-        return new Rectangle(x + hitboxWidth/2, y + hitboxHeight/2, hitboxWidth, hitboxWidth);
+        return new Rectangle(x, y, hitboxWidth, hitboxHeight);
     }
 
 

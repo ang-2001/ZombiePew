@@ -28,7 +28,7 @@ public class Model
     private static final int ITEM_POINT     = 50;
     private final int EASY                  = 150;
     private final int NORMAL                = 250;
-    private final int HARD                  = 350;
+    private final int HARD                  = 500;
 
     private final Random r = new Random();
 
@@ -53,7 +53,7 @@ public class Model
         this.screenHeight       = height;
         this.spriteSize         = spriteSize;
 
-        this.maxEnemies         = 6;
+        this.maxEnemies         = 4;
         this.currentEnemies     = 0;
         this.enemyVelocity      = 4;
 
@@ -237,8 +237,8 @@ public class Model
                 {
                     enemiesRemoved++;
 
-                    // probability of item generating is 1/14
-                    boolean itemIsGenerated = r.nextInt(14) == 0;
+                    // probability of item generating is 1/12
+                    boolean itemIsGenerated = r.nextInt(12) == 0;
 
                     if (itemIsGenerated)
                     {
@@ -409,20 +409,20 @@ public class Model
         this.score += scoreValue;
 
         // if score reaches a certain thresh hold, increase difficulty
-        if (score > EASY)
+        if (score > HARD)
         {
-            maxEnemies = 8;
-            enemyVelocity = 5;
+            maxEnemies = 12;
+            enemyVelocity = 7;
         }
         else if (score > NORMAL)
         {
             maxEnemies = 10;
             enemyVelocity = 6;
         }
-        else if(score > HARD)
+        else if(score > EASY)
         {
-            maxEnemies = 50;
-            enemyVelocity = 8;
+            maxEnemies = 6;
+            enemyVelocity = 5;
         }
     }
 

@@ -18,7 +18,7 @@ public class PewGame
     public static void main(String[] args)
     {
         model = new Model();
-        view = new View("Call of Pew Pew", queue);
+        view = new View("Pew Pew", queue);
         controller = new Controller(queue, model, view);
 
         try {
