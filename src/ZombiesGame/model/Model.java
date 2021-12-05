@@ -601,4 +601,16 @@ public class Model
     {
         return new GameInfo(this);
     }
+
+
+    /**
+     * used for testing model class only
+     * @param e Entity to be added to list of active entities
+     */
+    public void addEntity(Entity e){
+        entities.add(e);
+    }
 }
+
+
+
