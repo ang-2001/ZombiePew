@@ -2,7 +2,10 @@ package ZombiesGame.view;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class SpriteData
 {
@@ -12,7 +15,9 @@ public class SpriteData
     BufferedImage projectile;
     BufferedImage background;
     BufferedImage enemy;
-    BufferedImage item;
+    BufferedImage coffee;
+    BufferedImage mushroom;
+    BufferedImage chicken;
 
     public SpriteData()  {
         try
@@ -25,7 +30,11 @@ public class SpriteData
             projectile = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/projectile.png"));
             background = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/background_2.png"));
             enemy = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/zombie.png"));
-            item = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/item_1.png"));
+
+
+            coffee = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/item_1.png"));
+            mushroom = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/mushroom.png"));
+            chicken = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/chicken.png"));
 
         }
         catch (IOException io)
@@ -65,10 +74,19 @@ public class SpriteData
         return enemy;
     }
 
-    public BufferedImage getItemSprite()
+    public BufferedImage getCoffeeSprite()
     {
-        return item;
+        return coffee;
     }
+
+    public BufferedImage getMushroomSprite(){
+        return mushroom;
+    }
+
+    public BufferedImage getChickenSprite(){
+        return chicken;
+    }
+
 
     public BufferedImage getBackground()
     {

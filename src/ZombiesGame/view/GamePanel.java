@@ -179,7 +179,15 @@ public class GamePanel extends JPanel
                 }
                 else if (e.getClass() == Item.class)
                 {
-                    g2.drawImage(spriteData.getItemSprite(), e.getX(), e.getY(), spriteSize, spriteSize, null);
+                    if (((Item) e).getType() == 0){
+                        g2.drawImage(spriteData.getCoffeeSprite(), e.getX(), e.getY(), spriteSize, spriteSize, null);
+                    }
+                    if (((Item) e).getType() == 1){
+                        g2.drawImage(spriteData.getMushroomSprite(), e.getX(), e.getY(), spriteSize, spriteSize, null);
+                    }
+                    if (((Item) e).getType() == 2){
+                        g2.drawImage(spriteData.getChickenSprite(), e.getX(), e.getY(), spriteSize, spriteSize, null);
+                    }
                 }
             }
         }
