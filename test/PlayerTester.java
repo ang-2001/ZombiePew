@@ -15,8 +15,8 @@ public class PlayerTester
 
         Rectangle hitbox = p.getHitBox();
 
-        boolean equalPosition = (p.getX() + hitbox.width/2 == hitbox.x) && (p.getY() + hitbox.height/2 == hitbox.y);
-        boolean equalDimensions = (hitbox.width == 48) && (hitbox.height == 48);
+        boolean equalPosition = (p.getX()  == hitbox.x) && (p.getY() == hitbox.y);
+        boolean equalDimensions = (hitbox.width == 64) && (hitbox.height == 64);
 
         assertTrue(equalPosition && equalDimensions,
                 "expected output was true, actual value was false, positions not equal or hitbox not correct dimensions");
