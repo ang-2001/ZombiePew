@@ -9,6 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * The Controller classes connects the game by having direct communication to the model and the view. It is responsible for changing the state of the game for
+ * every message that has been passed to this class. The state of the game means the positions of all the entities present in the game, and the model data corresponding
+ * to these entities. It also means the state of the game whether the game should enter the start screen, game screen, or the game over screen.
+ */
 public class Controller
 {
     private BlockingQueue<Message> queue;
@@ -16,9 +21,14 @@ public class Controller
     private View view;
 
     private List<Valve> valves = new LinkedList<>();
-    
-    // add constructor arguments as needed
-    //queue, model, view
+
+
+    /**
+     * Creates an instance of the Controller class
+     * @param queue the queue that contains all the messages passed from the view
+     * @param model the model class that handles all the model objects in the game
+     * @param view the view class that handles all the view objects in the game
+     */
     public Controller(BlockingQueue<Message> queue, Model model, View view)
     {
         this.queue  = queue;
@@ -33,7 +43,10 @@ public class Controller
         valves.add(new FirstScreenValve());
     }
 
-
+    /**
+     * The function that loops over the queue and checks whether the message can executed by any of the valves in the list
+     * @throws Exception
+     */
     public void mainLoop() throws Exception
     {
         ValveResponse response = ValveResponse.EXECUTED;
@@ -60,12 +73,15 @@ public class Controller
     }
 
 
+    /**
+     * One of the valves that the controller checks whether the message from the queue is from the class "NewGameMessage"
+     */
     private class NewGameValve implements Valve
     {
         /**
-         * resets game state and gamedata, initializes start position of player
-         * @param message
-         * @return
+         * Calls the initialization/reset of the game state and data, and the starting position of player. It updates the view.
+         * @param message the message pass from the view along with data to properly reset game state and data
+         * @return a return value whether the valve response is either ignored or executed
          */
         @Override
         public ValveResponse execute(Message message) {
@@ -79,8 +95,6 @@ public class Controller
             // reset game state
             model.createNewGame(m.getWidth(),m.getHeight(),m.getSpriteSize());
 
-            // sets player position relative to screen height and width( should be near centered)
-
             model.createPlayer();
             // send render data to View
             GameInfo data = model.getGameStatus();
@@ -90,10 +104,16 @@ public class Controller
         }
     }
 
-
+    /**
+     * One of the valves that the controller checks whether the message from the queue is from the class "CreateProjectileMessage"
+     */
     private class CreateProjectileValve implements Valve
     {
-
+        /**
+         * Calls the function that creates a projectile whenever the mouse was clicked. It sends new updates back to the view for rendering the bullet
+         * @param message the message passed from the view that contains the mouse coordinates to create the projectile
+         * @return a return value whether the valve response is either ignored or executed
+         */
         @Override
         public ValveResponse execute(Message message)
         {
@@ -112,9 +132,16 @@ public class Controller
         }
     }
 
-
+    /**
+     * One of the valves that the controller checks whether the message from the queue is from the class "CreateEnemyMessage"
+     */
     private class CreateEnemyValve implements Valve
     {
+        /**
+         * Calls the functions that creates the enemy, and it sends new updates back to the view for rendering the enemy
+         * @param message the message passed from the view to execute the following function
+         * @return a return value whether the valve response is either ignored or executed
+         */
         @Override
         public ValveResponse execute(Message message)
         {
@@ -134,8 +161,17 @@ public class Controller
     }
 
 
+    /**
+     * One of the valves that the controller checks whether the message from the queue is from the class "UpdateEntitiesMessage"
+     */
     private class UpdateEntitiesValve implements Valve
     {
+        /**
+         * Calls the functions responsible for updating the positions of the entities in the view, and the functions that handles collision.
+         * It is also reponsible for switching the state of the game when the player is hit by an enemy.
+         * @param message the message passed from the view to execute the following function
+         * @return a return value whether the valve response is either ignored or executed
+         */
         @Override
         public ValveResponse execute(Message message) {
             if (message.getClass() != UpdateEntitiesMessage.class) {
@@ -166,9 +202,17 @@ public class Controller
         }
     }
 
-
+    /**
+     * One of the valves that the controller checks whether the message from the queue is from the class "StartGameMessage"
+     */
     private class StartGameValve implements Valve
     {
+        /**
+         * Switches the game to its game state. This is called whenever the player is at the main menu screen or the game over screen.
+         * It also updates the high score of the player
+         * @param message the message passed from the view to execute the following function
+         * @return a return value whether the valve response is either ignored or executed
+         */
         @Override
         public ValveResponse execute(Message message) {
             if (message.getClass() != StartGameMessage.class)
@@ -190,8 +234,16 @@ public class Controller
         }
     }
 
+    /**
+     * One of the valves that the controller checks whether the message from the queue is from the class "FirstScreenMessage"
+     */
     private class FirstScreenValve implements Valve
     {
+        /**
+         * Switches the game to the start screen menu. It calls the first screen to appear in the game
+         * @param message the message passed from the view to execute the following function
+         * @return a return value whether the valve response is either ignored or executed
+         */
         @Override
         public ValveResponse execute(Message message) {
             if (message.getClass() != FirstScreenMessage.class)
