@@ -489,4 +489,8 @@ public class Model
     {
         return new GameInfo(this);
     }
+
+    public void addEntity(Entity e){
+        entities.add(e);
+    }
 }
