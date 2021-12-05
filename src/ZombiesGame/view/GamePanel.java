@@ -11,29 +11,43 @@ import java.awt.event.*;
 import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * GamePanel class that inherits from JPanel
+ * defines layout of active game screen(when playing is in progress) and handles drawing and updating of components
+ * (player, enemies, projectiles)
+ * handles key inputs and button presses, regularly creates messages to animate movement
+ */
 public class GamePanel extends JPanel
 {
     private BlockingQueue<Message> queue;
     private ActionTracker keysPressed;
+
+    // timers for movement, entity creation
+    private final Timer animationTimer;
+    private final Timer projectileTimer;
+    private final Timer enemyTimer;
+
+    // data for drawing
+    private LinkedList<Entity> entities;
+    private final SpriteData spriteData;
     private Dimension dimensions;
+    private Point mousePosition;
     private int spriteSize;
 
-    private Timer animationTimer;
-    private Timer projectileTimer;
-    private Timer enemyTimer;
+    // labels for score and high score
+    private final JLabel highScoreLabel;
+    private final JLabel scoreLabel;
 
-    private LinkedList<Entity> entities;
-    private Point mousePosition;
-    private SpriteData spriteData;
-
-    private JLabel scoreLabel;
-    private JLabel highScoreLabel;
-    private int score = 0;
-    private int highScore = 0;
 
     /**
-     * constructor for GamePanel class that should initialize panelWidth and panelHeight,
-     * which will be used to set up the preferred size of the panel
+     * Default constructor that does a lot of stuff
+     * initializes variables, adds listeners to this panel, creates timers to handle regular message creation
+     * @param queue reference to message queue to add messages for game updates(movement)
+     *              and creation of projectiles and enemies
+     * @param spriteSize constant integer value that defines the base size of sprites for drawing image components
+     *                   (player, enemy, projectile, items)
+     * @param d dimensions of the game screen, used for drawing the background, initializing the game,
+     *          getting preferred dimensions
      */
     public GamePanel(BlockingQueue<Message> queue, int spriteSize, Dimension d)
     {
@@ -51,11 +65,11 @@ public class GamePanel extends JPanel
         scoreLabel.setForeground(Color.BLACK);
         scoreLabel.setFont(new Font("Serif", Font.PLAIN, 30));
 
-        add(scoreLabel);
-
         highScoreLabel = new JLabel();
         highScoreLabel.setForeground(Color.BLACK);
         highScoreLabel.setFont(new Font("Serif", Font.PLAIN, 30));
+
+        add(scoreLabel);
         add(highScoreLabel);
 
         // defines delay in message generation for game updates = ~60 refreshes/sec
@@ -101,47 +115,59 @@ public class GamePanel extends JPanel
     }
 
 
+    /**
+     * starts a new game, starts timers
+     */
     public void start()
     {
-        // temporary placement of game initiation(to be moved to an actual button)
+        // start/restart game
         try {
             queue.put(new NewGameMessage(dimensions.width, dimensions.height, spriteSize));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        // add in another method later during screen switching
+        // starts timers for model and view updates, projectile enemy creation
         animationTimer.start();
         projectileTimer.start();
         enemyTimer.start();
     }
 
 
+    /**
+     * stops game by stopping timers, resetting ActionTracker
+     */
     public void stop()
     {
         animationTimer.stop();
         projectileTimer.stop();
         enemyTimer.stop();
-        keysPressed.reset();
 
+        // reset ActionTracker to prevent key states from carrying over to new game
+        keysPressed.reset();
+        keysPressed = ActionTracker.getInstance();
     }
+
+
     /**
-     *
-     * @param info
+     * updates list of active entities to draw, scores to display, redraw active entities
+     * @param info GameInfo class that stores necessary info for drawing, score, high score, and active entities
      */
     public void updateView(GameInfo info)
     {
         this.entities = info.getEntityInfo();
-        score = info.getScore();
-        scoreLabel.setText("Score: " + score);
-        highScore = info.getHighScore();
-        highScoreLabel.setText("High score: " + highScore);
+
+        int highScore = info.getHighScore();
+        int score = info.getScore();
+        scoreLabel.setText("SCORE: " + score);
+        highScoreLabel.setText("HIGH SCORE: " + highScore);
+
         repaint();
     }
 
     /**
-     *
-     * @return
+     * gets preferred dimensions of the JPanel for sizing of the container(JFrame)
+     * @return Dimension defined from the constants passed to this class from the JFrame
      */
     @Override
     public Dimension getPreferredSize()
@@ -149,9 +175,10 @@ public class GamePanel extends JPanel
         return dimensions;
     }
 
+
     /**
-     *
-     * @param g
+     * draws all entities with specified sprite data at given position, depending on what type of entity they are
+     * @param g does the drawing
      */
     @Override
     public void paintComponent(Graphics g) {
@@ -159,8 +186,9 @@ public class GamePanel extends JPanel
 
         Graphics2D g2 = (Graphics2D) g;
 
-        g2.drawImage(spriteData.getBackground(), 0, 0, null);
-        // these are just placeholders, will replace with sprites later
+        g2.drawImage(spriteData.getBackground(), 0, 0, null); // draw background
+
+        // makes sure entities list is assigned to something first
         if(entities != null)
         {
             for(Entity e: entities)
@@ -194,9 +222,12 @@ public class GamePanel extends JPanel
     }
 
 
+    /**
+     * Listens to key presses/releases and stores info in ActionTracker
+     */
     private class KeyHandler extends KeyAdapter
     {
-        // will read key presses (when they are held down)
+        // when specific keys are pressed, change states in ActionTracker to true
         @Override
         public void keyPressed(KeyEvent e)
         {
@@ -212,8 +243,7 @@ public class GamePanel extends JPanel
                 keysPressed.setRight(true);
         }
 
-
-        // will read key presses (when they are released)
+        // when specific keys are released, change states in ActionTracker to false
         @Override
         public void keyReleased(KeyEvent e)
         {
@@ -232,10 +262,23 @@ public class GamePanel extends JPanel
 
 
     /**
-     *
+     * Listens to mouse clicks, presses, and releases to create messages and update ActionTracker
      */
     private class MouseHandler extends MouseAdapter
     {
+        // When mouse is clicked once, get position and create a new message for projectile creation
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            try {
+                mousePosition = e.getPoint(); // gets position of the mouse at the time of click
+                queue.put(new CreateProjectileMessage(mousePosition)); // creates new message to create new projectile
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        // When mouse click is held, get position and update ActionTracker
+        @Override
         public void mousePressed(MouseEvent e)
         {
             //System.out.println("clicked at: " + mousePosition);
@@ -243,17 +286,21 @@ public class GamePanel extends JPanel
             keysPressed.setClicked(true);
         }
 
+        // when mouse is released, update ActionTracker
+        @Override
         public void mouseReleased(MouseEvent e)
         {
             keysPressed.setClicked(false);
         }
     }
 
+
     /**
-     *
+     * Listens to when mouse is dragged while click is held to constantly update mouse position
      */
     private class MouseDraggedHandler extends MouseMotionAdapter
     {
+        // when mouse click is held, constantly update mouse position
         @Override
         public void mouseDragged(MouseEvent e)
         {
