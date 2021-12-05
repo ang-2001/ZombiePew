@@ -23,8 +23,8 @@ public class Model
 
     // variables for enemy movement and creation
     private int enemySpeed;
-    private int maxEnemies; // max enemies on the screen at a time
-    private int currentEnemies; // current enemies on the screen
+    private int maxEnemies;
+    private int currentEnemies;
 
     // score data
     private int score;

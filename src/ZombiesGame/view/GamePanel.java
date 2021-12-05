@@ -28,7 +28,6 @@ public class GamePanel extends JPanel
     private final Timer enemyTimer;
 
     // data for drawing
-
     private LinkedList<Entity> entities;
     private final SpriteData spriteData;
     private Dimension dimensions;
