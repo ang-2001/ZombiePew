@@ -152,7 +152,7 @@ public class Controller
             Entity player = model.getEntities().getFirst();
             if (!player.isActive())
             {
-                 model.setHighScore();
+                 model.updateHighScore();
                  GameInfo info = model.getGameStatus();
                  view.updateScore(info);
                  view.switchPanel("gameOverPanel");
@@ -178,17 +178,16 @@ public class Controller
 
             StartGameMessage m = (StartGameMessage) message;
 
-            model.setHighScore();
+            model.updateHighScore();
             GameInfo info = model.getGameStatus();
             view.updateScore(info);
             view.updateView(info);
             view.switchPanel("gamePanel");
 
-
-
             return ValveResponse.EXECUTED;
         }
     }
+
 
     private class FirstScreenValve implements Valve
     {
@@ -201,7 +200,7 @@ public class Controller
 
             FirstScreenMessage m = (FirstScreenMessage) message;
 
-            model.setHighScore();
+            model.updateHighScore();
             GameInfo info = model.getGameStatus();
             view.updateScore(info);
 
