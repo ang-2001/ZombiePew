@@ -19,7 +19,7 @@ public class GameOverPanel extends JPanel {
     private Dimension dimensions;
 
     private JLabel scoreLabel;
-    private JLabel highScoreLabel;
+    private JLabel highScoreLabel; //
 
     /**
      * constructor that defines the layout of the game over screen and action listener for 'Play Again' button
