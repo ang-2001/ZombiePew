@@ -1,6 +1,7 @@
 package ZombiesGame.model;
 
 import java.awt.*;
+import java.util.Random;
 
 /**
  * Item class that inherits from Entity
@@ -8,6 +9,10 @@ import java.awt.*;
  */
 public class Item extends Entity
 {
+
+    Random r = new Random();
+    private int type = 0;
+
     /**
      * Defualt constructor that creates an item object at the position of another entity 'e'
      * @param e Entity whose position will be used to create an item
@@ -15,8 +20,12 @@ public class Item extends Entity
     public Item (Entity e)
     {
         super(e.x, e.y);
+        type = r.nextInt(3);
     }
 
+    public int getType(){
+        return type;
+    }
 
     /**
      * get item hitbox for collision checks

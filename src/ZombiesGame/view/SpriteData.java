@@ -2,7 +2,10 @@ package ZombiesGame.view;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * contains all sprite data(buffered images), passes them to the view for drawing
@@ -14,7 +17,9 @@ public class SpriteData
     BufferedImage projectile;
     BufferedImage background;
     BufferedImage enemy;
-    BufferedImage item;
+    BufferedImage coffee;
+    BufferedImage mushroom;
+    BufferedImage chicken;
 
 
     /**
@@ -33,7 +38,11 @@ public class SpriteData
             projectile = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/projectile.png"));
             background = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/background_2.png"));
             enemy = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/zombie.png"));
-            item = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/item_1.png"));
+
+
+            coffee = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/item_1.png"));
+            mushroom = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/mushroom.png"));
+            chicken = ImageIO.read(getClass().getResourceAsStream("/ZombiesGame/sprites/chicken.png"));
 
         }
         catch (IOException io)
@@ -90,14 +99,29 @@ public class SpriteData
 
 
     /**
-     * Gets item sprite
+     * Gets coffee sprite
      * @return BufferedImage that stores data for sprite
      */
-    public BufferedImage getItemSprite()
+    public BufferedImage getCoffeeSprite()
     {
-        return item;
+      return coffee;
     }
 
+    /**
+     * Gets mushroom sprite
+     * @return BufferedImage that stores data for sprite
+     */
+    public BufferedImage getMushroomSprite(){
+        return mushroom;
+    }
+
+    /**
+     * Gets chicken sprite
+     * @return BufferedImage that stores data for sprite
+     */
+    public BufferedImage getChickenSprite(){
+        return chicken;
+    }
 
     /**
      * Gets background image
