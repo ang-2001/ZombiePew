@@ -22,6 +22,7 @@ public class ModelTester
                 "Rectangle and player hitbox must be equal");
     }
 
+
     @Test
     public void testEnemyCount(){
         Model m = new Model();
@@ -40,19 +41,21 @@ public class ModelTester
         assertEquals(2, numOfEnemies, "Called create enemy function 2 times, enemy count must be 2");
     }
 
+
     @Test
     public void testItemScoreCount(){
         Model m = new Model();
         m.createNewGame(1024, 768, 64);
         m.createPlayer();
 
-        Item item1 = new Item(m.getEntities().getFirst().getX() , m.getEntities().getFirst().getY());
+        Item item1 = new Item(m.getEntities().getFirst());
         m.addEntity(item1);
 
         m.checkCollisions();
         int currentScore = m.getScore();
         assertEquals(50, currentScore, "When player collides with an item, score should increment by 50");
     }
+
 
     @Test
     public void testEnemyScoreCount(){
@@ -71,15 +74,15 @@ public class ModelTester
         assertEquals(5, currentScore, "When a projectile collides with an enemy, score should increment by 5");
     }
 
+
     @Test
     public void testHighScoreInFile(){
         Model m = new Model();
-        m.setHighScore();
+        m.updateHighScore();
         int highScore = m.getHighScore();
 
         int highScoreInFile = Integer.parseInt(m.checkScoreInFile());
 
         assertTrue(highScore == highScoreInFile, "Checks if the high score on file is equal to the high score");
-
     }
 }

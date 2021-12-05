@@ -168,8 +168,8 @@ public class Controller
     {
         /**
          * Calls the functions responsible for updating the positions of the entities in the view, and the functions that handles collision.
-         * It is also reponsible for switching the state of the game when the player is hit by an enemy.
-         * @param message the message passed from the view to execute the following function
+         * It is also responsible for switching the state of the game when the player is hit by an enemy.
+         * @param message passed from the view to execute the following function
          * @return a return value whether the valve response is either ignored or executed
          */
         @Override
@@ -188,7 +188,7 @@ public class Controller
             Entity player = model.getEntities().getFirst();
             if (!player.isActive())
             {
-                 model.setHighScore();
+                 model.updateHighScore();
                  GameInfo info = model.getGameStatus();
                  view.updateScore(info);
                  view.switchPanel("gameOverPanel");
@@ -202,13 +202,14 @@ public class Controller
         }
     }
 
+
     /**
-     * One of the valves that the controller checks whether the message from the queue is from the class "StartGameMessage"
+     * Valve that handles messages of type StartGameMessage
      */
     private class StartGameValve implements Valve
     {
         /**
-         * Switches the game to its game state. This is called whenever the player is at the main menu screen or the game over screen.
+         * Switches the game to its game screen. This is called when the user interacts with buttons in the Start or Game Over screen
          * It also updates the high score of the player
          * @param message the message passed from the view to execute the following function
          * @return a return value whether the valve response is either ignored or executed
@@ -222,17 +223,16 @@ public class Controller
 
             StartGameMessage m = (StartGameMessage) message;
 
-            model.setHighScore();
+            model.updateHighScore();
             GameInfo info = model.getGameStatus();
             view.updateScore(info);
             view.updateView(info);
             view.switchPanel("gamePanel");
 
-
-
             return ValveResponse.EXECUTED;
         }
     }
+
 
     /**
      * One of the valves that the controller checks whether the message from the queue is from the class "FirstScreenMessage"
@@ -240,7 +240,7 @@ public class Controller
     private class FirstScreenValve implements Valve
     {
         /**
-         * Switches the game to the start screen menu. It calls the first screen to appear in the game
+         * Updates the score on the start screen when the game first starts
          * @param message the message passed from the view to execute the following function
          * @return a return value whether the valve response is either ignored or executed
          */
@@ -253,7 +253,7 @@ public class Controller
 
             FirstScreenMessage m = (FirstScreenMessage) message;
 
-            model.setHighScore();
+            model.updateHighScore();
             GameInfo info = model.getGameStatus();
             view.updateScore(info);
 
